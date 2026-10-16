@@ -199,6 +199,25 @@ def medir_sincronia(viewport_mp4, atraso, duracao, intervalo=5.0, primeira=0.5):
     return float(np.median(atrasos))
 
 
+# Left edge of the Studio 3D viewport in the window (maximized window border), in capture pixels. Studio's Creator
+# Store panel can open as an overlay over the left side of the viewport after the window opens: the camera is still
+# centred on the whole viewport, but the magenta flash (and so the recorded region) only shows the visible part.
+VIEWPORT_X0 = 7
+
+
+def centro_real_do_viewport(viewport_mp4, largura_bruta):
+    """Centre of the real viewport along the recorded width (pixels from the left of the recording), or None when
+    the whole viewport was visible."""
+    meta = Path(viewport_mp4).with_suffix('.json')
+    try:
+        x0, _, x1, _ = json.loads(meta.read_text(encoding='utf-8'))['regiao']
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+    if x0 <= VIEWPORT_X0 + 10:
+        return None
+    return (VIEWPORT_X0 + x1) / 2 - x0
+
+
 def processar(viewport_mp4, saida, atraso, duracao, largura=1080, fps=60, deitada=True, margem_topo=0.075,
               compensar=True):
     """viewport (camera deitada) -> clipe vertical 9:16 a partir do t=0 da timeline.
@@ -213,6 +232,7 @@ def processar(viewport_mp4, saida, atraso, duracao, largura=1080, fps=60, deitad
         atraso += min(0.2, max(-0.1, lat))
     info = probe(viewport_mp4)
     w, h = info['width'], info['height']
+    largura_bruta = w
     corte = int(h * margem_topo) // 2 * 2
     vf = [f'crop={w}:{h - corte}:0:{corte}'] if corte else []
     h -= corte
@@ -220,7 +240,17 @@ def processar(viewport_mp4, saida, atraso, duracao, largura=1080, fps=60, deitad
         vf.append('transpose=2')
         w, h = h, w
     tw, th = (w, round(w * 16 / 9 / 2) * 2) if h * 9 >= w * 16 else (round(h * 9 / 16 / 2) * 2, h)
-    vf += [f'crop={tw}:{th}', f'scale={largura}:{round(largura * 16 / 9 / 2) * 2}:flags=lanczos', f'fps={fps}', 'setsar=1', 'format=yuv420p']
+    crop_xy = ''
+    centro = centro_real_do_viewport(viewport_mp4, largura_bruta) if deitada else None
+    if centro is not None:
+        # The 3D view is centred on the real viewport, not on the visible part: centre the 9:16 crop there (the
+        # video's vertical axis is the raw width reversed), shrinking it if it would reach the covered part.
+        cy = largura_bruta - centro
+        th = min(th, int(2 * min(cy, h - cy)) // 2 * 2)
+        tw = min(w, round(th * 9 / 16 / 2) * 2)
+        crop_xy = f':{(w - tw) // 2}:{int(cy - th / 2)}'
+        print(f'[captura] viewport partly covered: 9:16 crop centred on the real viewport (y {int(cy - th / 2)}, {tw}x{th})')
+    vf += [f'crop={tw}:{th}{crop_xy}', f'scale={largura}:{round(largura * 16 / 9 / 2) * 2}:flags=lanczos', f'fps={fps}', 'setsar=1', 'format=yuv420p']
     subprocess.run([ffmpeg(), '-hide_banner', '-v', 'error', '-y', '-ss', f'{atraso:.3f}', '-i', str(viewport_mp4),
                     '-t', f'{duracao:.3f}', '-vf', ','.join(vf), '-an', '-c:v', 'libx264', '-preset', 'slow', '-crf', '14',
                     str(saida)], check=True)

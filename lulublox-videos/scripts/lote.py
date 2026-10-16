@@ -164,11 +164,10 @@ def _creditos(p):
         return ''
     texto = arq[0].read_text(encoding='utf-8').strip()
     # The renderer writes the credits in Portuguese: the channel is all in English.
-    for pt, en in (('Fonte:', 'Source:'), ('Licenca:', 'License:'), ('Licença:', 'License:'),
-                   ('Alteracoes: trecho, cortes, fades, ajuste de volume e sincronizacao com video.',
-                    'Changes: excerpt, cuts, fades, volume and sync with the video.'),
-                   ('Alterações:', 'Changes:'), ('Alteracoes:', 'Changes:')):
+    for pt, en in (('Fonte:', 'Source:'), ('Licenca:', 'License:'), ('Licença:', 'License:')):
         texto = texto.replace(pt, en)
+    # Whatever wording the renderer used for the changes line, the English line is fixed.
+    texto = re.sub(r'(?m)^Altera(?:c|ç)(?:oe|õe)s:.*$', 'Changes: excerpts, cuts, fades, volume and sync with the video.', texto)
     return texto
 
 

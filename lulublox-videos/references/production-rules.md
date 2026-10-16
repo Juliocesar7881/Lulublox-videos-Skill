@@ -88,3 +88,22 @@ They apply to every Lulublox Short. Most of them come from the user's earlier cl
 ## Variety inside a batch
 - Do not repeat the same punchline in a row (things landing on her head, a 1-10-100 escalation): change the
   mechanic or the twist and spread similar ideas apart in the schedule.
+
+## Found in the 2026-10-16 review (check these in every contact sheet)
+- **Sitting**: the `sentadoReto` pose (legs straight out) points her sneaker soles at a front camera: two big
+  pink squares in front of her body. On swings, tires, floats and boats use the plain `sentar` animation (knees
+  bent, legs hanging). Keep `sentadoReto` only when she sits on the floor, and shoot it from a high
+  three-quarter angle.
+- **Things she holds** (a beach ball, a bowl, a giant magnet, a basket) go below her chin: hold them low, or
+  raise the camera. The camera audit does not see props covering her face.
+- **Option inserts**: the number cards go on the table's front edge, below the objects (never standing in
+  front of them), and the shot uses a fixed focus (`K.foco(nil)`, back to `K.foco(noob.Head)` when she is on
+  screen again). Otherwise close objects come out blurred.
+- **No jump cuts**: a cut needs a clearly different camera (angle or size). Two nearly identical shots look
+  like a glitch: keep one shot and move the camera instead.
+- **Wide inserts of small fast things** (a ball, a paper plane) need a trail or a bigger prop to read on a
+  phone.
+- **Studio panel over the viewport**: Studio's Creator Store panel sometimes opens over the left side of the
+  3D viewport. `captura_janela.processar` detects it from the recorded region and centres the 9:16 crop on the
+  real viewport (`[captura] viewport partly covered`). Without that, everything sat 10% too low and faces went
+  behind the captions.
