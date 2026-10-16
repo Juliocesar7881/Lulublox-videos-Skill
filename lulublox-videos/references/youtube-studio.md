@@ -1,8 +1,11 @@
 # Posting on YouTube (LuluBlox YT)
 
-Lulu videos go **only** to the **LuluBlox YT** channel (`UCuSjAXe84Yzfi8BqN5SBQdw`, see `config.json`). Never post
-them on another channel. The user is already signed in to YouTube Studio in their Chrome (Claude in Chrome); never
-type passwords, never change account or channel settings.
+By default Lulu videos go to the **LuluBlox YT** channel (`UCuSjAXe84Yzfi8BqN5SBQdw`, see `config.json`). A batch can
+name another channel in its `lote.json` (`"canal": {"nome", "handle", "id"}`), only when the user asks for it.
+Example: the 2026-10-17 batch went to **Phonkfox** (`@PHONKFOXS`, `UCf-oNM_HXDYMXPw5Kn2n3gw`), on another Google
+account whose Studio UI is in **English**. Before every upload, check the channel id in the Studio URL. The user is
+already signed in to YouTube Studio in their Chrome (Claude in Chrome); never type passwords, never change account
+or channel settings.
 
 ## Settings for every Lulu video (decided with the user on 2026-10-15)
 

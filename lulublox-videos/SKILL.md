@@ -26,7 +26,7 @@ Lulu always speaks with **"Jessica - Playful, Bright, Warm"**, chosen by the use
 - The Explore tab copies of these voices may ask for a paid plan. Always use the copy in **My Voices** and never suggest paying.
 - How to generate and download the lines:
   - With an API key in `ELEVENLABS_API_KEY` (the user sets it): `python scripts/tts_elevenlabs.py roteiro.json --out falas`.
-  - Without a key: in the user's logged-in browser, type each line, generate it with Ctrl+Enter and keep the `eleven_v4` take of the two the site creates. Move the files with `scripts/receptor_falas.py PASTA` (local server on 127.0.0.1) and `postMessage`. Then `python scripts/alinhar_falas.py roteiro.json falas` aligns them with Whisper (English).
+  - Without a key: in the user's logged-in browser, generate **one take per video** with all its lines, one per paragraph (type them with real keys and Enter between lines; never `execCommand` in the editor, it froze the tab). Keep the `eleven_v4` take of the two the site creates (check `model_id` in the captured history JSON, not the order). Move the files with `scripts/receptor_falas.py PASTA` (local server on 127.0.0.1) and `postMessage`. Open the receiver window once with a real click, then send each take with `postMessage` to that same window. Then `python scripts/dividir_falas.py PROJECT TAKE.mp3` cuts it into `falas/fala-NN.mp3`: difflib alignment, cut at the longest silence between lines, low-threshold trim so soft consonants stay. `python scripts/alinhar_falas.py roteiro.json falas` then checks every line against the script. 14 videos took about 15 browser steps this way, versus about 70 with one generation per line. If a word sounds wrong in the whole take ("Sandcastle" heard as "Fancastle" by Whisper medium too), regenerate only that line.
   - Never type the user's password or keys.
 
 ## Originality in every video
@@ -49,6 +49,10 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
 1. **Project and original idea**: create `entregas/<topic>-<date>`. Copy `modelos/base/` (`comum.py`, `edicao.py`, `cenario_comum.lua`) next to the project folders as in a batch: each project has `gerar_cena.py`, `montar_edicao.py`, `studio/cenario_corpo.lua` and `roteiro.json`.
 2. **Script** (`roteiro.json`): English `texto` for each line, `titulo`, `arquivo` (MP4 name), `"idiomas": ["en"]`, `vozes`, `destaques` (words in yellow) and a plan per line. Short lines, one idea each, with an emotion tag for ElevenLabs. Format in [references/format.md](references/format.md).
 3. **Voice**: as described above.
+3b. **Plan every shot before writing Lua** ([references/first-time-right.md](references/first-time-right.md)): a beat
+   table in the `gerar_cena.py` docstring (where Lulu, the key object and the camera are, and what must be visible),
+   checked against the line-of-sight, camera-distance, props, materials and weld rules. The goal is one recording per
+   video; `scripts/lint_cena.py` (run by `auditar.py` and `fazer_short.py`) blocks the known mistakes before Studio.
 4. **Set** (`studio/cenario_corpo.lua`):
    - Colorful and alive, with props around.
    - Mark every floor with `K.piso(...)`.
@@ -72,10 +76,10 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
 8. **Final review**: `revisar_legendas.py` total 0, about −14 LUFS with peaks under −1.5 dBTP, Whisper transcript of the final audio in English, and frame checks.
 9. **Delivery** (`fazer_short.py PROJECT --so-conferir`): the final MP4 plus `publicacao.txt` with an English title, description, hashtags, music credits and voice credit.
 
-## Posting (LuluBlox YT)
+## Posting
 
-- Channel: **LuluBlox YT** only. Two videos per day, **09:00 and 18:00** of the same day (`lote.py agenda`).
-- Made for kids: yes. Category Gaming with the game title Roblox. Video language English.
+- Channel: **LuluBlox YT** by default; a batch can name another channel of the user in `lote.json` (`"canal"`, e.g. Phonkfox @PHONKFOXS from 2026-10-17). Two videos per day, **09:00 and 18:00** of the same day (`lote.py agenda`).
+- Made for kids: the channel default, unless `lote.json`/`roteiro.json` say `"feito_para_criancas": false` (comments on). Category Gaming with the game title Roblox. Video language English.
 - `lote.py metadados` writes the SEO title/description/tags and the credits; the user makes the thumbnails.
 - The upload and scheduling steps in YouTube Studio are in [references/youtube-studio.md](references/youtube-studio.md).
 

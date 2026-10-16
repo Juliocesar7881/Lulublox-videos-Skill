@@ -196,6 +196,15 @@ def para_criancas(c, lote, rot=None):
     return c['feito_para_criancas']
 
 
+def canal_do_lote(c, lote):
+    """The channel of a batch: lote.json "canal" (nome, handle, id) over config.json."""
+    canal = dict(c['canal'])
+    lj = Path(lote) / 'lote.json'
+    if lj.exists():
+        canal.update(json.loads(lj.read_text(encoding='utf-8')).get('canal') or {})
+    return canal
+
+
 def cmd_metadados(a):
     c = config()
     lote = Path(a.lote).resolve()
@@ -318,7 +327,7 @@ def cmd_agenda(a):
                       'publish_at': 'now' if a.agora else quando.isoformat(), 'video': m['video'], 'titulo': m['titulo'],
                       'descricao': m['descricao'], 'tags': m['tags'], 'feito_para_criancas': m.get('feito_para_criancas'),
                       'status': 'pendente', 'link': None})
-    canal = c['canal']
+    canal = canal_do_lote(c, lote)
     agenda = {'fuso': c['fuso'], 'gerado': agora.isoformat(timespec='minutes'),
               'canal': f'{canal["nome"]} ({canal["handle"]})', 'feito_para_criancas': para_criancas(c, lote),
               'categoria': c['categoria'], 'idioma': canal['idioma_video'], 'itens': itens}

@@ -7,9 +7,18 @@ LOTE = Path(__file__).resolve().parent
 RS = Path.home() / '.claude' / 'skills' / 'lulublox-videos' / 'scripts' / 'studio_runscript.py'
 PY = sys.executable
 
+LINT = Path.home() / '.claude' / 'skills' / 'lulublox-videos' / 'scripts' / 'lint_cena.py'
+
 for nome in sys.argv[1:]:
     proj = LOTE / nome
     st = proj / 'studio'
+    # known mistakes first (seconds, no Studio): see references/first-time-right.md
+    subprocess.run([PY, 'gerar_cena.py'], cwd=proj, capture_output=True)
+    lint = subprocess.run([PY, str(LINT), str(proj)], capture_output=True, text=True, encoding='utf-8', errors='replace')
+    print(lint.stdout.strip(), flush=True)
+    if lint.returncode:
+        print(f'== {nome}: lint errors above, Studio skipped', flush=True)
+        continue
     r = subprocess.run([PY, 'gerar_cena.py'], cwd=proj, capture_output=True, text=True, encoding='utf-8', errors='replace')
     if r.returncode:
         print(f'== {nome}: gerar_cena failed\n{r.stdout[-1500:]}{r.stderr[-1500:]}', flush=True)

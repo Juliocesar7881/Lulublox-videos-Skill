@@ -121,6 +121,11 @@ def main():
             if not (pasta / 'falas.json').exists():
                 rodar([sys.executable, AQUI / 'alinhar_falas.py', '--idioma', idioma, 'roteiro.json', pasta.name], proj, check=True)
             rodar([sys.executable, 'gerar_cena.py', '--idioma', idioma], proj, check=True)
+            lint = subprocess.run([sys.executable, str(Path(__file__).with_name('lint_cena.py')), str(proj)], capture_output=True,
+                                  text=True, encoding='utf-8', errors='replace')
+            print(lint.stdout.strip())
+            if lint.returncode:
+                raise SystemExit(f'{idioma}: lint_cena.py found errors (above); see references/first-time-right.md')
             # Auditoria zerada antes de gravar (regra da skill). Problema encontrado sempre bloqueia;
             # saida do Studio nao capturada bloqueia, a menos que --sem-confirmar-auditoria (o usuario pediu).
             audit_ok = auditar(proj, suf)
