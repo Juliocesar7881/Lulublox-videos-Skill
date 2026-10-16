@@ -47,7 +47,7 @@ They apply to every Lulublox Short. Most of them come from the user's earlier cl
 5. Consequence: she falls with real gravity and never floats still after an impact.
 
 ## Lines, voice and continuity
-- English only, with Lulu's chosen ElevenLabs voice (Jessica, Laura or Bella from My Voices), model Eleven v4, an emotion tag at the start of each line and no accent tag.
+- English only, with Lulu's voice: ElevenLabs "Jessica - Playful, Bright, Warm" (My Voices, ID cgSgspJ2msm6clMCkdW9), model Eleven v4, an emotion tag at the start of each line and no accent tag.
 - The intention line comes before the action; the reaction starts on the event.
 - No stutter or wrong words: fix the source audio. A correct caption does not fix a wrong line.
 - Measure the lines first, then fit the action timing.

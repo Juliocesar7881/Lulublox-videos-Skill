@@ -23,7 +23,7 @@ def main():
     ap.add_argument('roteiro', type=Path)
     ap.add_argument('pasta', type=Path)
     ap.add_argument('--modelo', default='small')
-    ap.add_argument('--voz', default='Lulu (ElevenLabs)')
+    ap.add_argument('--voz', default='Jessica (ElevenLabs)')
     ap.add_argument('--idioma', default=None, help='pt (padrao) ou es: usa texto_es e transcreve em espanhol')
     a = ap.parse_args()
     import numpy as np

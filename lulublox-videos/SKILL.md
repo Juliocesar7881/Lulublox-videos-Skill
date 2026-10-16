@@ -1,6 +1,6 @@
 ---
 name: lulublox-videos
-description: "Create animated Roblox Shorts for kids (9:16, ~25-35 s) starring Lulu, a charismatic and cute girl avatar, entirely in English: original kid-friendly script, Lulu's female ElevenLabs voice, scene built and animated in Roblox Studio through the official command line (no clicks), recording only the Studio window, and a punchy final edit with word-by-word captions, SFX and music."
+description: "Create animated Roblox Shorts for kids (9:16, ~25-35 s) starring Lulu, a charismatic and cute girl avatar, entirely in English: original kid-friendly script, Lulu's ElevenLabs voice (Jessica), scene built and animated in Roblox Studio through the official command line (no clicks), recording only the Studio window, and a punchy final edit with word-by-word captions, SFX and music."
 ---
 
 # Lulublox Videos
@@ -18,17 +18,9 @@ The audience is kids. Read [references/production-rules.md](references/productio
 
 This skill depends on the sibling skill `roblox-video-editor` (renderer, SFX/music library and stickers). The repository's `install.py` checks for it.
 
-## Lulu's voice (ElevenLabs, free default voices)
+## Lulu's voice: Jessica (ElevenLabs, free default voice)
 
-Three free voices from **Voices → My Voices** fit her and kids' videos:
-
-| Option | Voice | Feel |
-|---|---|---|
-| 1 | **Jessica - Playful, Bright, Warm** | playful, smiley, big-sister energy |
-| 2 | **Laura - Enthusiast, Quirky Attitude** | energetic, funny, quirky |
-| 3 | **Bella - Professional, Bright, Warm** | bright, warm, clear storyteller |
-
-Use the voice the user chose; it goes in each project's `roteiro.json` as `"vozes": {"lulu": "<name>"}`. Until the user picks, use Jessica.
+Lulu always speaks with **"Jessica - Playful, Bright, Warm"**, chosen by the user on 2026-10-15. It is a free default (premade) voice in **Voices → My Voices**, voice ID `cgSgspJ2msm6clMCkdW9`. Check the ID, not only the name. In each project's `roteiro.json`: `"vozes": {"lulu": "Jessica"}`. Do not switch to another voice unless the user asks.
 
 - Model **Eleven v4**, language Automatic. Write each line in English with an emotion tag at the start, for example `[excited] Hi friends!`, `[giggles] Oops!`, `[gasps] No way!` or `[whispers] Shh...`. Do not add an accent tag.
 - The Explore tab copies of these voices may ask for a paid plan. Always use the copy in **My Voices** and never suggest paying.

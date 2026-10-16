@@ -25,7 +25,7 @@ Other formats that fit Lulu (always original): a tiny "how not to…" story, "1 
 
 ## Audio
 
-- Lulu's voice (ElevenLabs, the chosen female voice) clear and in front; lively background music, low.
+- Lulu's voice (ElevenLabs Jessica) clear and in front; lively background music, low.
 - SFX on almost every event: whoosh on cuts, pop on reaction captions, tick/ding on every countdown number, impact/boing on falls, applause or an "error" sound on the twist. Every effect plays to its end.
 
 ## Script (`roteiro.json`)

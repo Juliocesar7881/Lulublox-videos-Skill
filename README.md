@@ -11,7 +11,7 @@ Lulu's look:
 What the skill does, from one idea:
 
 1. Writes an original kid-friendly script (for example "Which slide is the fastest? Pick fast! 5-4-3-2-1" plus a silly twist) and checks it against the log of past videos.
-2. Generates Lulu's voice with a free ElevenLabs default voice (Jessica, Laura or Bella, model Eleven v4).
+2. Generates Lulu's voice with the free ElevenLabs default voice Jessica (Playful, Bright, Warm; model Eleven v4).
 3. Builds and animates the scene in Roblox Studio through the official command line (`-task RunScript`), with no clicks. It runs collision and camera audits, then records only the Studio window.
 4. Edits the final 1080×1920 Short with karaoke captions, sound effects and licensed music, and checks loudness, the transcript and the frames.
 
