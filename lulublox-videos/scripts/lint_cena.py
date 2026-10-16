@@ -109,6 +109,22 @@ def checar(proj):
             erros.append(f'the video ends {T["fim"]:.2f}s, too close to the last word (no room for the ending)')
         if len(T.get('cortes', [])) > 3:
             avisos.append(f'{len(T["cortes"])} cuts: the user asked for few, soft cuts (travel or follow the camera instead)')
+
+    # first shot: Lulu is about 4.5 studs wide in idle (arms out); more than ~2.0 studs off the camera target she is cut at
+    # the frame edge even when her face passes the audit (02 gift boxes, 2026-10-17)
+    corpo = proj / 'studio' / 'cenario_corpo.lua'
+    gc = proj / 'gerar_cena.py'
+    if corpo.exists() and gc.exists():
+        mg = re.search(r'criarGarota\([^,]+,\s*K\.emPe\(V\(\s*([-\d.]+)\s*,\s*[-\d.]+\s*,\s*([-\d.]+)', corpo.read_text(encoding='utf-8'))
+        mc = re.search(r'cam\.corte\(V\(([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\),\s*V\(([-\d.]+),', gc.read_text(encoding='utf-8'))
+        if mg and mc:
+            lx, lz = float(mg.group(1)), float(mg.group(2))
+            dist = ((float(mc.group(1)) - lx) ** 2 + (float(mc.group(3)) - lz) ** 2) ** 0.5
+            limite = 0.49 * dist - 2.25          # half the frame width at her depth (FOV 52) minus half her width
+            dx = abs(lx - float(mc.group(4)))
+            if dx > limite:
+                avisos.append(f'first shot: Lulu stands {dx:.1f} studs from the camera target x (limit {limite:.1f} at '
+                              f'{dist:.1f} studs) - her arm/body gets cut at the frame edge; move the camera or the props')
     return erros, avisos
 
 

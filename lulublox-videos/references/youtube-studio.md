@@ -80,6 +80,18 @@ await window.__escolher(/Idioma do v.deo|Video language/i, /^(Ingl.s|English)$/i
 7. Close the "Entendi/Got it" notice; the share dialog shows "Vídeo programado … DATE às HH:MM" and the Shorts
    link. Save it with `python scripts/lote.py marcar LOTE N agendado --link URL`.
 
+English UI / new account (Phonkfox, 2026-10-16) — differences that cost retries:
+- The account default category was **Entertainment**, so the game title box did not exist. Switch Category to
+  Gaming first: `__escolher(/^(Entertainment|People & Blogs|Category.*)$/i, /^Gaming$/i)`. Then the
+  `input[aria-label="Game title (optional)"]` appears.
+- After clicking the `Roblox 2006` option, wait about 1.5 s **before** focusing Tags. The dropdown puts the focus
+  back on the game box, and the typed tags otherwise end up in the game title. While the dialog says
+  "Saving…", the game box can read empty for a moment: poll it before deciding.
+- The date box uses `Oct 17, 2026` (select all, type, Enter). The time options are `9:00 AM` / `6:00 PM`, and the
+  time zone option is `(GMT-0300) Local Time`. The scheduled dialog says "Video scheduled … October 17, 2026 at
+  9:00 AM".
+- A "Help us improve policy checks" card shows up at the bottom right. Leave it alone (it is a survey).
+
 Uploads in a row: YouTube may limit the daily uploads of a new channel. If the dialog shows a limit, stop and tell
 the user which videos are left; never try another channel.
 

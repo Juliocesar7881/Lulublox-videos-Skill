@@ -24,7 +24,9 @@ def main():
     agenda = json.loads((lote / 'agenda.json').read_text(encoding='utf-8'))
     videos = {it['n']: Path(it['video']) for it in agenda['itens']}
     # Metadados de cada vídeo para preencher o formulário do Studio direto da agenda (sem digitar à mão).
-    metas = {it['n']: {k: it[k] for k in ('titulo', 'descricao', 'tags', 'data_studio', 'hora_studio')} | {'arquivo': Path(it['video']).name}
+    # feito_para_criancas goes along: the page picks MFK / NOT_MFK from it (a batch can be "not made for kids").
+    metas = {it['n']: {k: it[k] for k in ('titulo', 'descricao', 'tags', 'data_studio', 'hora_studio')}
+             | {'arquivo': Path(it['video']).name, 'feito_para_criancas': it.get('feito_para_criancas')}
              for it in agenda['itens']}
 
     class Handler(http.server.BaseHTTPRequestHandler):

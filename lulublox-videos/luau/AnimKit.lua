@@ -1726,6 +1726,9 @@ function AnimKit.auditarCamera(noob, minimo)
 				end
 				if fracao < minimo then agora[string.format("rosto pequeno (< %d%%)", minimo * 100)] = true end
 				if ang > 100 then agora["de costas"] = true elseif ang > 60 then agora["de perfil"] = true end
+				-- Face below the caption band also looks wrong (the caption sits on her body; 01 magic seed,
+				-- 2026-10-17): the face center must stay in the upper 62% of the frame.
+				if centro.Y > 0.62 then agora["rosto baixo (abaixo de 62% do quadro)"] = true end
 				-- Desenho do rosto inteiro (a placa: sobrancelhas ate o fim da boca de grito) contra a faixa
 				-- das legendas, com folga para o zoom que a edicao aplica nas cenas de acao.
 				local placa = noob:FindFirstChild("RostoPlaca")

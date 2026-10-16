@@ -21,6 +21,27 @@ visible** (her face + the thing the joke is about). Then check each row:
 
 ## 2. Camera
 
+Lulu's real size, measured in renders (table of known width as the ruler): about **7 studs tall** (face around
+y 6.5-7) and about **4.5 studs wide** in the idle pose (arms out, puffy sleeves). A 3-stud "giant" pumpkin looks
+small next to her: a "giant" prop must be 4+ studs. Plan with these numbers:
+
+- Width budget: at FOV 52 the frame is about 0.98 × distance wide, and the face rule (≥ 8%) caps the distance
+  at about 9.5 studs, so the frame is at most about 9.3 studs wide. Her 4.5 studs plus the props must fit in about
+  8. Keep her root within about 2.0 studs (x) of the camera target at 8–9 studs (the frame is about 8.3 studs wide
+  there). Further out, her arm and body get cut at the frame edge even when the face passes the audit.
+  `lint_cena.py` warns about this.
+- The joke object goes at least about 3.5 studs (x) from her root: an easel, wheel or oven closer than that ends
+  up behind her arm (09 easel at 1.7, 08 wheel at 2.1, 12 oven at 1.6). A small character next to her (a bird, a
+  kitten) needs its own spot beside her head or in front of her, never at her side where her arm hangs.
+- Small props are tiny next to her: scale a sock, cookie or robot vacuum 1.5–2.2×.
+- Check the background right behind her head. A big round treetop or balloon there looks glued to her head.
+- Don't stack brown cylinders into a cone (it looks like a poop emoji). Use many thin gray tiers for a volcano.
+- PointLights inside props near the floor leave a yellow stain on the grass. Keep their Range at about 1.5, or
+  use Neon only.
+- Objects on the ground in front of her (a pet rock, a sock) land in the caption band (0.665–0.75) at a medium
+  shot. Put a joke object on a table or stool (y ≥ 2), or keep the key moment in a pause between lines, when no
+  caption is on screen.
+
 - A medium shot is 6.5–8.5 studs from her with FOV 46–52. Closer than about 6 studs makes her hands and props
   huge. A close-up uses `cam.rosto`.
 - Aim below her face: the target is about 1 stud under the eyes. The face sits in the upper half, never in the
