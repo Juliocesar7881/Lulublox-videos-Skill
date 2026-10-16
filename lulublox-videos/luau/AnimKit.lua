@@ -234,7 +234,13 @@ local function rostoGui(noob)
 			local t = frame("Traco" .. i, pisc, PRETO, UDim2.fromScale(i == 1 and 0.3 or 0.7, 0.45), UDim2.fromScale(0.58, 0.085), 4, true)
 			t.Rotation = r
 		end
-		fechado.Visible, xis.Visible, pisc.Visible = false, false, false
+		-- Dormindo: olhos fechados em "u" (os dois lados), para quem pega no sono.
+		local dorm = vazio("Dormindo" .. lado, gui, UDim2.fromScale(x, OLHO.y + 0.02), UDim2.fromScale(OLHO.w, OLHO.h), 2)
+		for i, r in ipairs({ 30, -30 }) do
+			local t = frame("Traco" .. i, dorm, PRETO, UDim2.fromScale(i == 1 and 0.3 or 0.7, 0.5), UDim2.fromScale(0.58, 0.085), 4, true)
+			t.Rotation = r
+		end
+		fechado.Visible, xis.Visible, pisc.Visible, dorm.Visible = false, false, false, false
 		frame("Sobrancelha" .. lado, gui, AnimKit.CORES.sobrancelha, UDim2.fromScale(x, OLHO.y - OLHO.h / 2 - SOBRANCELHA.acima),
 			UDim2.fromScale(SOBRANCELHA.w, SOBRANCELHA.h), 6, true)
 		local boch = elipse("Bochecha" .. lado, gui, Color3.fromRGB(255, 120, 150),
@@ -688,6 +694,9 @@ local EXPR = {
 	tonto = { olho = 1.02, pupila = 0.6, sobE = -8, sobY = 0, boca = "o", suor = true, tonto = true },
 	apertado = { olho = 1, pupila = 1, sobE = 18, sobY = 0.03, boca = "grito", suor = true, fechado = true },
 	nocaute = { olho = 1, pupila = 1, sobE = -6, sobY = 0, boca = "reta", xis = true },
+	-- Sono: palpebras meio fechadas, sobrancelhas caidas. Dormindo: olhos fechados em "u", sorrisinho.
+	sono = { olho = 1, pupila = 1, sobE = -14, sobY = 0.02, boca = "o", sono = true },
+	dormindo = { olho = 1, pupila = 1, sobE = -6, sobY = 0.02, boca = "sorriso", dormindo = true },
 }
 -- Nomes da skill eibrunoruan/roblox-shorts-generator como apelidos.
 for apelido, nome in pairs({ curious = "surpreso", panic = "grito", angry = "bravo", hurt = "nocaute",
@@ -695,7 +704,7 @@ for apelido, nome in pairs({ curious = "surpreso", panic = "grito", angry = "bra
 	-- English names (Lulublox scripts use these)
 	happy = "feliz", smile = "sorrindo", surprised = "surpreso", scared = "medo", scream = "grito",
 	nervous = "nervoso", confident = "confiante", doubt = "duvida", dizzy = "tonto", squint = "apertado",
-	knockout = "nocaute", wink = "piscadinha" }) do
+	knockout = "nocaute", wink = "piscadinha", sleepy = "sono", sleep = "dormindo" }) do
 	EXPR[apelido] = EXPR[nome]
 end
 AnimKit.EXPRESSOES = EXPR
@@ -737,7 +746,7 @@ local function atualizarRosto(noob, e, dt)
 
 	-- Piscada: o olho (e a pupila junto) achata ate quase fechar e volta, em 0,16 s.
 	local aberto = 1
-	if e.piscarAuto and not ex.fechado and not ex.xis then
+	if e.piscarAuto and not ex.fechado and not ex.xis and not ex.dormindo then
 		if not e.piscada and agora >= e.proxPiscada then e.piscada = agora end
 		if e.piscada then
 			local u = (agora - e.piscada) / 0.16
@@ -778,11 +787,12 @@ local function atualizarRosto(noob, e, dt)
 
 	for _, lado in ipairs({ "E", "D" }) do
 		local olho = g["Olho" .. lado]
-		olho.Visible = not ex.fechado and not ex.xis and ex.pisca ~= lado
+		olho.Visible = not ex.fechado and not ex.xis and ex.pisca ~= lado and not ex.dormindo
+		g["Dormindo" .. lado].Visible = ex.dormindo == true
 		g["Fechado" .. lado].Visible = ex.fechado == true
 		g["Xis" .. lado].Visible = ex.xis == true
 		g["Piscada" .. lado].Visible = ex.pisca == lado
-		olho.Size = UDim2.fromScale(OLHO.w * e.atual.olho, OLHO.h * e.atual.olho * aberto)
+		olho.Size = UDim2.fromScale(OLHO.w * e.atual.olho, OLHO.h * e.atual.olho * aberto * (ex.sono and 0.45 or 1))
 		local pup = olho.Branco.Pupila
 		pup.Size = UDim2.fromScale(PUPILA.w * e.atual.pupila, PUPILA.h * e.atual.pupila)
 		local dx, dy = e.olharAtual.X, e.olharAtual.Y
@@ -828,7 +838,11 @@ for _, x in ipairs({ -0.5, 0.5 }) do
 	end
 end
 local PERNAS = { "LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot" }
-local MAX_ABRE = math.rad(84)
+local MAX_ABRE = math.rad(72)
+-- Suavizacao da saia: a prega abre e fecha seguindo a perna sem saltos (antes abria num unico quadro,
+-- e uma perna entrando ou saindo da faixa da saia fazia as pregas "teletransportarem" para cima e
+-- para baixo). Constantes de tempo de abrir/fechar e velocidade maxima em radianos por segundo.
+local SAIA_TAU_ABRE, SAIA_TAU_FECHA, SAIA_VEL_MAX = 0.045, 0.16, math.rad(420)
 
 local function saiaDe(model)
 	local s = saias[model]
@@ -868,9 +882,15 @@ local function atualizarSaia(s, dt)
 		for _, q in ipairs(pts) do
 			local v = q - pr.H
 			local h = -v.Y
-			if h > 0.02 and h < s.alt + 0.15 and math.abs(v:Dot(pr.tang)) < s.larg * 0.5 + 0.35 then
+			-- Peso suave (0..1) em vez de uma faixa com bordas duras: um ponto da perna que entra ou sai
+			-- da altura da saia (ou da largura da prega) passa a contar aos poucos.
+			local wAlt = math.clamp((h - 0.02) / 0.12, 0, 1) * math.clamp((s.alt + 0.3 - h) / 0.3, 0, 1)
+			local lado = math.abs(v:Dot(pr.tang)) - (s.larg * 0.5 + 0.2)
+			local wLado = math.clamp(1 - lado / 0.3, 0, 1)
+			local w = wAlt * wLado
+			if w > 0 then
 				local r = v:Dot(pr.n) + 0.1 -- folga de 0,1 stud por fora da perna
-				if r > 0 then req = math.max(req, math.atan2(r, h)) end
+				if r > 0 then req = math.max(req, s.abre + (math.atan2(r, math.max(h, 0.05)) - s.abre) * w) end
 			end
 		end
 		alvo[i] = math.min(req, MAX_ABRE)
@@ -881,12 +901,12 @@ local function atualizarSaia(s, dt)
 			alvo[i] = math.max(alvo[i], alvo[(i - 2) % n + 1] - 0.22, alvo[i % n + 1] - 0.22)
 		end
 	end
+	dt = math.clamp(dt or 1 / 60, 1 / 240, 1 / 15)
 	for i, pr in ipairs(s.pregas) do
-		if alvo[i] >= pr.phi then
-			pr.phi = alvo[i]
-		else
-			pr.phi += (alvo[i] - pr.phi) * (1 - math.exp(-dt / 0.12))
-		end
+		local tau = alvo[i] > pr.phi and SAIA_TAU_ABRE or SAIA_TAU_FECHA
+		local passo = (alvo[i] - pr.phi) * (1 - math.exp(-dt / tau))
+		local lim = SAIA_VEL_MAX * dt
+		pr.phi += math.clamp(passo, -lim, lim)
 		pr.solda.C0 = (pregaCF(s.rx, s.rz, s.topoY, s.alt, pr.th, pr.phi))
 	end
 end

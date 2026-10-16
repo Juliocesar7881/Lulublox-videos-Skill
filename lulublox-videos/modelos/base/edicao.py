@@ -66,17 +66,39 @@ FX = {
     'boing_curto': [OL + 'boing-original.mp3'],
     # Lulublox (criar_sfx_chuva.py): continuous rain bed, shorten with dur.
     'chuva': [OL + 'chuva-continua.mp3'],
+    # Originals that end on their own (criar_sfx_inteiros.py): nothing ever needs to be cut.
+    'coracao_5s': [OL + 'coracao-5s.mp3'],
+    'vento_curto': [OL + 'vento-rajada.mp3'],
+    'deslize': [OL + 'deslize-curto.mp3'],
+    'tremor': [OL + 'tremor-curto.mp3'],
+    'impacto_curto': [OL + 'impacto-curto.mp3'],
+    'explosao_curta': [OL + 'explosao-curta.mp3'],
+    'brilho_curto': [OL + 'brilho-curto.mp3'],
+    'apito_sobe_curto': [OL + 'apito-sobe-curto.mp3'],
+    'fogo_curto': [OL + 'fogo-curto.mp3'],
 }
+# When a sound does not fit whole in the pause, sfx_livre() uses this shorter WHOLE sound instead (never a cut).
+RESERVA = {'impacto': 'impacto_curto', 'explosao': 'explosao_curta', 'brilho': 'brilho_curto', 'harpa': 'brilho_curto',
+           'apito_sobe': 'apito_sobe_curto', 'apito_desce': 'deslize', 'escorregar': 'deslize', 'mergulho': 'respingo',
+           'soco': 'impacto_curto', 'tremor': 'impacto_curto', 'engracado': 'boing_curto', 'boing_curto': 'pop',
+           'bolhas': 'pop', 'vento_curto': 'whoosh', 'deslize': 'whoosh', 'ding': 'pop', 'clique': 'pop',
+           'erro_curto': 'pop', 'respingo': 'pop', 'impacto_curto': 'pop', 'explosao_curta': 'impacto_curto',
+           'brilho_curto': 'pop', 'apito_sobe_curto': 'pop', 'fogo_curto': 'whoosh', 'whoosh': 'pop'}
 # Só sons contínuos (texturas/loops) podem ser encurtados com 'dur', e sempre com fade longo. Os outros tocam
 # inteiros: efeito cortado no meio é proibido (o cliente reprovou).
-CORTAVEIS = {'chuva', 'coracao', 'domino', 'vento', 'jato', 'regador', 'espuma', 'escorregar'}
+# Nenhum efeito e cortado: o usuario ouviu efeitos 'cortados pela metade' (os encurtados com fade, como vento,
+# deslize e o coracao de 6,5 s cortado em 5 s na contagem). Todo som toca inteiro; para algo curto, use um som
+# curto (vento_curto, deslize, tremor, coracao_5s).
+CORTAVEIS = set()
 GAIN = {'whoosh': -10, 'pop': -11, 'clique': -11, 'ding': -11, 'brilho': -12, 'impacto': -5, 'explosao': -7, 'soco': -7,
         'boing': -10, 'erro': -11, 'erro_curto': -11, 'apito': -12, 'coracao': -12, 'timpano': -9, 'trombone': -10,
         'engracado': -11, 'aplausos': -14, 'sucesso': -10, 'harpa': -12, 'pizzicato': -12, 'apito_desce': -13,
         'escorregar': -11, 'pum': -12, 'campainha': -12, 'grunhido': -12, 'bicho': -12,
         'domino': -15, 'onda': -9, 'espuma': -13, 'vento': -14,
         'apito_sobe': -13, 'jato': -15, 'regador': -15, 'respingo': -10, 'mergulho': -8, 'bolhas': -13,
-        'trombone_longo': -10, 'boing_curto': -11, 'chuva': -24}
+        'trombone_longo': -10, 'boing_curto': -11, 'chuva': -24,
+        'coracao_5s': -12, 'vento_curto': -14, 'deslize': -13, 'tremor': -9,
+        'impacto_curto': -8, 'explosao_curta': -9, 'brilho_curto': -14, 'apito_sobe_curto': -15, 'fogo_curto': -10}
 
 
 class Edicao:
@@ -122,6 +144,8 @@ class Edicao:
         arquivo = lista[i % len(lista)]
         inteiro = self.duracoes.get(arquivo, 0) / (pitch or 1)
         row = {'file': arquivo, 'at': round(at, 3), 'gain_db': GAIN[cat] if gain is None else gain}
+        if dur and dur < inteiro - 0.02 and cat not in CORTAVEIS:
+            self.avisos.append(f'ERRO {cat} em {at:.2f}s: dur={dur:.2f} cortaria o som ({inteiro:.2f}s); use um som curto inteiro')
         if dur and dur < inteiro - 0.02:
             if cat in CORTAVEIS:
                 row['duration'] = round(max(0.05, dur), 3)
@@ -136,6 +160,37 @@ class Edicao:
         if at < self.fim - 0.05:
             self.S.append(row)
         return row
+
+    def _palavras(self):
+        if not hasattr(self, '_pal'):
+            self._pal = [(self.ini[i] + p['start'], self.ini[i] + p['end']) for i in self.ini for p in self.F[i]['palavras']]
+        return self._pal
+
+    def livre(self, a, b):
+        """True if [a, b] does not cover any spoken word (same 0.05 s tolerance as conferir_sfx.py)."""
+        return not any(i < b - 0.02 and f > a + 0.02 for i, f in self._palavras())   # stricter than conferir_sfx
+
+    def sfx_livre(self, cat, at, gain=None, pitch=None, folga=0.3):
+        """Places a WHOLE effect as close as possible to 'at' (within +-folga) where it neither covers a word nor
+        runs past the end of the video; tries the shorter files of the category too. Skips it (with a note) if
+        nothing fits: an effect over the voice or cut in the middle is never acceptable."""
+        lista = FX[cat]
+        ordem = sorted(range(len(lista)), key=lambda k: ((k - self._uso[cat]) % len(lista)))
+        passos = sorted({round(d * 0.02, 2) for d in range(-int(folga / 0.02), int(folga / 0.02) + 1)}, key=abs)
+        for k in ordem:
+            dur = self.duracoes.get(lista[k], 0) / (pitch or 1)
+            for dt in passos:
+                t = at + dt
+                if t < 0 or t + dur > self.fim - 0.05:
+                    continue
+                if self.livre(t, t + dur):
+                    self._uso[cat] = k
+                    return self.sfx(cat, t, gain=gain, pitch=pitch)
+        if cat in RESERVA:
+            self.avisos.append(f'({cat} at {at:.2f}s does not fit whole: using {RESERVA[cat]})')
+            return self.sfx_livre(RESERVA[cat], at, gain=None, pitch=None, folga=folga)
+        self.avisos.append(f'(skipped {cat} at {at:.2f}s: no free gap for the whole sound)')
+        return None
 
     def musica(self, nome, gain=-24, at=0.0, duracao=None, offset=None):
         row = {'file': f'musicas/curtos/{nome}', 'at': round(at, 3), 'gain_db': gain, 'fade_out': 1.2}
@@ -166,7 +221,7 @@ class Edicao:
 
     def contagem(self, t0, x=0.39, y=0.6, largura=0.22):
         """Selos 5-4-3-2-1 com clique, coração acelerado e zoom-soco leve (sem tremida)."""
-        self.sfx('coracao', t0, dur=5.0)
+        self.sfx('coracao_5s', t0)
         for n in range(5):
             t = t0 + n
             self.O.append({'file': BADGE + f'contagem-{5 - n}.png', 'at': round(t, 3), 'duration': 0.95,

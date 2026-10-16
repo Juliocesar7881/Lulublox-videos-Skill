@@ -293,6 +293,9 @@ local soldas = {}
 function soldar(obj, parte, cf)
 	local base = obj:IsA("Model") and obj.PrimaryPart or obj
 	if cf then porPivo(obj, parte.CFrame * cf) end
+	-- no mass: a big prop welded to her (a ghost sheet, a hat) must not drag the character down into the floor
+	base.Massless = true
+	for _, p in ipairs(obj:GetDescendants()) do if p:IsA("BasePart") then p.Massless = true end end
 	base.Anchored = false
 	local w = Instance.new("WeldConstraint")
 	w.Part0, w.Part1 = parte, base

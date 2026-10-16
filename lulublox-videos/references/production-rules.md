@@ -107,3 +107,30 @@ They apply to every Lulublox Short. Most of them come from the user's earlier cl
   3D viewport. `captura_janela.processar` detects it from the recorded region and centres the 9:16 crop on the
   real viewport (`[captura] viewport partly covered`). Without that, everything sat 10% too low and faces went
   behind the captions.
+
+## Found in the 2026-10-16 feedback (user) and the 2026-10-23 batch audits
+- **The skirt must never jump.** The kit opens and closes each pleat smoothly (soft weights, time-constant
+  smoothing and a speed limit in `atualizarSaia`); never set a pleat angle directly in a scene.
+- **Effects are never cut and never cover a word.** Use `ed.sfx_livre(cat, t)` in every edit: it places the
+  WHOLE sound in the nearest pause (±0.3 s), and when it does not fit it swaps to a shorter whole sound
+  (`RESERVA`: impacto → impacto_curto, explosao → explosao_curta, brilho → brilho_curto, apito_sobe →
+  apito_sobe_curto, ...). The short ones are synthesized by `scripts/criar_sfx_inteiros.py` and end on their own.
+  A skipped effect (no pause at all) is better than a cut one. `conferir_sfx.py` must report 0 for every video.
+- **Fewer, softer cuts.** Prefer one continuous shot with camera travels, follow cameras and ride-along cameras;
+  cut only when the story changes place or time (a big poof or a flash can hide it). Most videos of the batch
+  have 0 or 1 cut.
+- **Follow camera**: `cam.seguir(raiz, offset, 99, ...)` and end it with the next cut. The scene clock can run
+  behind `os.clock()` (Studio in the background), so a follow with an exact duration ended ~1 s early and she
+  fell out of the frame.
+- **Welded props**: `soldar` makes the prop massless (a big welded sheet or hat dragged her 0.4 into the floor).
+  Weld only in the same frame as the prop's last move (`animar(..., function(k) ...; if k >= 1 then soldar(...) end)`),
+  never in a `task.delay` next to a `mover` (the move's last frame then drags her whole body). Unweld (`soltar`)
+  before re-positioning a welded prop: `PivotTo` on a welded model moves the character too.
+- **Every model needs `fechar(m, primaria)`** (PrimaryPart): `soldar`/`soltar` crash without it and the scene
+  stops before the first camera move ("rosto fora do quadro" from 0 s).
+- **Laughing in a close-up**: the `rir` animation throws her head back ("de costas"); use little hops (`pulo`)
+  and the happy face instead.
+- **Selfie / point-of-view shots**: aim the camera below her face (target ~0.7 under the eyes); with the camera
+  at eye level and the target higher, the face slides into the caption band.
+- **Lines never overlap**: check that every line starts ≥ 0.15 s after the previous one ends (long tags like
+  "Ah! Too high!" make a line longer than the event it covers).
