@@ -184,6 +184,18 @@ def _tags_validas(tags):
     return saida
 
 
+def para_criancas(c, lote, rot=None):
+    """Made-for-kids choice: the script (roteiro.json) wins, then the batch (lote.json), then config.json."""
+    if rot and 'feito_para_criancas' in rot:
+        return bool(rot['feito_para_criancas'])
+    lj = Path(lote) / 'lote.json'
+    if lj.exists():
+        info = json.loads(lj.read_text(encoding='utf-8'))
+        if 'feito_para_criancas' in info:
+            return bool(info['feito_para_criancas'])
+    return c['feito_para_criancas']
+
+
 def cmd_metadados(a):
     c = config()
     lote = Path(a.lote).resolve()
@@ -202,7 +214,7 @@ def cmd_metadados(a):
                                         'Music:\n' + creditos if creditos else '', 'Voice: ElevenLabs ("Jessica" voice).'] if x)
         tags = _tags_validas(rot.get('tags') or [])
         meta = {'video': str(video) if video else None, 'titulo': titulo, 'descricao': corpo, 'tags': tags,
-                'feito_para_criancas': c['feito_para_criancas'], 'categoria': c['categoria'],
+                'feito_para_criancas': para_criancas(c, lote, rot), 'categoria': c['categoria'],
                 'idioma': c['canal']['idioma_video']}
         erros = []
         if not video or not video.exists():
@@ -304,13 +316,14 @@ def cmd_agenda(a):
         itens.append({'n': p.name[:2], 'projeto': p.name, 'quando': quando.strftime('%Y-%m-%d %H:%M'),
                       'data_studio': quando.strftime('%d/%m/%Y'), 'hora_studio': quando.strftime('%H:%M'),
                       'publish_at': 'now' if a.agora else quando.isoformat(), 'video': m['video'], 'titulo': m['titulo'],
-                      'descricao': m['descricao'], 'tags': m['tags'], 'status': 'pendente', 'link': None})
+                      'descricao': m['descricao'], 'tags': m['tags'], 'feito_para_criancas': m.get('feito_para_criancas'),
+                      'status': 'pendente', 'link': None})
     canal = c['canal']
     agenda = {'fuso': c['fuso'], 'gerado': agora.isoformat(timespec='minutes'),
-              'canal': f'{canal["nome"]} ({canal["handle"]})', 'feito_para_criancas': c['feito_para_criancas'],
+              'canal': f'{canal["nome"]} ({canal["handle"]})', 'feito_para_criancas': para_criancas(c, lote),
               'categoria': c['categoria'], 'idioma': canal['idioma_video'], 'itens': itens}
     gravar(lote / 'agenda.json', agenda)
-    print(f'Channel {agenda["canal"]}: {"made for kids" if c["feito_para_criancas"] else "not made for kids"}, '
+    print(f'Channel {agenda["canal"]}: {"made for kids" if agenda["feito_para_criancas"] else "NOT made for kids"}, '
           f'{c["categoria"]}, {canal["idioma_video"]}')
     for it in itens:
         print(f'  {it["quando"]}  {it["projeto"]}  {it["titulo"]}')

@@ -9,7 +9,7 @@ type passwords, never change account or channel settings.
 | Field | Value |
 |---|---|
 | Schedule | **09:00 and 18:00 of the same day**, time zone `(GMT-0300) Local time` (America/Sao_Paulo). `lote.py agenda` fills the slots. |
-| Audience | **Yes, it's made for kids** (`VIDEO_MADE_FOR_KIDS_MFK`) |
+| Audience | Channel default (`config.json`): **made for kids** (`VIDEO_MADE_FOR_KIDS_MFK`). A batch can override it in `lote.json` / `roteiro.json` (`"feito_para_criancas": false`, e.g. the 2026-10-23 engagement test) and then uses `VIDEO_MADE_FOR_KIDS_NOT_MFK`; `lote.py metadados/agenda` carry the choice to `publicacao.json` and `agenda.json`. |
 | Paid promotion | No (`VIDEO_PAID_PRODUCT_PLACEMENT_NO`) |
 | Altered content | No (`VIDEO_HAS_ALTERED_CONTENT_NO`) |
 | Video language | English |
@@ -30,7 +30,8 @@ Entendi, Horário local). The snippets below accept the Portuguese and English l
 const espera = ms => new Promise(r => setTimeout(r, ms)); const N = '01';
 const clicar = el => (el.querySelector('button') || el).click();
 for (const b of [...document.querySelectorAll('ytcp-button, button')].filter(b => /^(close|fechar)$/i.test((b.innerText || '').trim()) && b.offsetParent)) { clicar(b); await espera(500); }
-clicar(document.querySelector('ytcp-button#create-icon')); await espera(1200);
+// the Create button lost its id in Oct 2026: find it by its label
+clicar(document.querySelector('ytcp-button#create-icon') || [...document.querySelectorAll('ytcp-button')].find(e => /^(criar|create)$/i.test((e.innerText || '').trim()) && e.offsetParent)); await espera(1200);
 [...document.querySelectorAll('tp-yt-paper-item')].find(i => /upload videos|enviar v.deos/i.test(i.innerText) && i.offsetParent).click(); await espera(2500);
 const m = await (await fetch('http://127.0.0.1:8768/meta/' + N)).json();
 const blob = await (await fetch('http://127.0.0.1:8768/video/' + N)).blob();
@@ -44,7 +45,7 @@ const preencher = (sel, texto) => { const c = d.querySelector(sel); c.focus(); d
 preencher('#title-textarea #textbox', m.titulo); await espera(500);
 preencher('#description-textarea #textbox', m.descricao); await espera(500);
 const mais = d.querySelector('#toggle-button'); if (mais) { clicar(mais); await espera(1500); }
-for (const nome of ['VIDEO_MADE_FOR_KIDS_MFK', 'VIDEO_PAID_PRODUCT_PLACEMENT_NO', 'VIDEO_HAS_ALTERED_CONTENT_NO']) { const r = d.querySelector('[name=' + nome + ']'); if (r) { r.click(); await espera(400); } }
+for (const nome of [m.feito_para_criancas === false ? 'VIDEO_MADE_FOR_KIDS_NOT_MFK' : 'VIDEO_MADE_FOR_KIDS_MFK', 'VIDEO_PAID_PRODUCT_PLACEMENT_NO', 'VIDEO_HAS_ALTERED_CONTENT_NO']) { const r = d.querySelector('[name=' + nome + ']'); if (r) { r.click(); await espera(400); } }
 ```
 
 3. Language: a dropdown helper (`ytcp-form-select` whose text matches the label), then pick `Inglês`/`English`:
@@ -62,7 +63,10 @@ window.__escolher = async (rotulo, opcao) => {
 await window.__escolher(/Idioma do v.deo|Video language/i, /^(Ingl.s|English)$/i);
 ```
 
-4. Category stays **Jogos/Gaming** (the account default). Click the game title box (`input[aria-label="Título do jogo
+   The language list renders a moment after it opens: wait for the `Inglês` option (retry ~5 s) before clicking.
+
+4. Category stays **Jogos/Gaming** (the account default). Focus the game title box from JS (`scrollIntoView`,
+   `click()`, `focus()`; a coordinate click can land on another field after the dialog scrolls), or click the game title box (`input[aria-label="Título do jogo
    (opcional)"]`), type `Roblox` with real key presses (`computer` → `type`) and click the `Roblox 2006` suggestion.
 5. Tags: click `input[aria-label=Tags]`, type `m.tags.join(', ') + ','` with real key presses and check that the
    number of chips (`ytcp-chip, ytcp-free-text-chip`) equals the number of tags.
@@ -75,3 +79,8 @@ await window.__escolher(/Idioma do v.deo|Video language/i, /^(Ingl.s|English)$/i
 
 Uploads in a row: YouTube may limit the daily uploads of a new channel. If the dialog shows a limit, stop and tell
 the user which videos are left; never try another channel.
+
+Checks that saved time in the 2026-10-23 batch: verify `chips === tags.length` and the title before Next; verify the
+date text, `HH:MM` and `GMT-0300` in one call and only then click Programar; read the link from the dialog that says
+"Vídeo programado" (the upload dialog also shows a link before scheduling). In the content list, a not-made-for-kids
+Short shows comments on; a made-for-kids one shows "Comentários desativados".
