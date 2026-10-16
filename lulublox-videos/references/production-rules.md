@@ -69,3 +69,22 @@ They apply to every Lulublox Short. Most of them come from the user's earlier cl
 - 1080×1920, bitrate ≥ 12 Mbps (CRF ≤ 18), no Studio/Roblox interface, no cursor, no borders.
 - A living, textured set (clouds, trees, flowers, props), with Future lighting, Atmosphere, Bloom and ColorCorrection.
 - Indoors, avoid lots of white, strong PointLights, Neon and semi-transparent beams between the camera and Lulu: they wash out the image. Use mid-tone colors and weak lights.
+
+## Camera tricks that pass the face audit
+- Spins, loops and flips show her back: shoot them as inserts (`K.inserto(true)`), because "de costas" always counts.
+- On rides (swings, rockets) keep her on the ride by moving her root in the same function that moves the ride
+  (never in a separate Heartbeat: she lags one frame behind and jitters). A **ride-along camera** bound with
+  `RunService:BindToRenderStep(name, Enum.RenderPriority.Camera.Value, fn)` (before the kit camera and the audit)
+  keeps her face in frame even upside down.
+- A camera that `cam.rosto` computes in the same frame as a big move can still see the old place: when an
+  animation (`animar`) also calls `cam.corte` every frame, end it **before** the cut that changes the scene.
+- Tall props (a tower of scoops, a giant cake): the face still needs ≥ 8% of the frame height and must stay above
+  the caption band (0.665–0.75). Crop the top of the prop instead of shrinking her face; show the whole prop in an
+  insert.
+- Things she holds in front of her (a magnet, a bowl) and things that stick to them stay below her chin from the
+  front camera; check the `[camera-detalhe]` lines for the face position.
+- Water: the pond is a non-solid part, and nothing solid (grass, baseplate) may stay under the area where she sinks.
+
+## Variety inside a batch
+- Do not repeat the same punchline in a row (things landing on her head, a 1-10-100 escalation): change the
+  mechanic or the twist and spread similar ideas apart in the schedule.

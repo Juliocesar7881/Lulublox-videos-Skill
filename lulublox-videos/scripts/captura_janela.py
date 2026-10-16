@@ -14,8 +14,10 @@ from media_utils import ffmpeg  # noqa: E402
 
 
 def magenta_mask(bgra):
+    # The flash is a ScreenGui (pure 255,0,255, untouched by the scene's color correction). Lulu's pink top,
+    # saturated by the ColorCorrection, can get close to magenta in a close-up: only near-pure magenta counts.
     b, g, r = bgra[..., 0], bgra[..., 1], bgra[..., 2]
-    return (r > 215) & (g < 60) & (b > 215)
+    return (r > 235) & (g < 25) & (b > 235)
 
 
 class Gravador:
@@ -80,7 +82,7 @@ class Gravador:
         if self.regiao is None:
             small = buf[::12, ::12]
             m = magenta_mask(small)
-            if m.mean() > 0.12:
+            if m.mean() > 0.2:
                 ys, xs = np.nonzero(m)
                 y0, y1 = max(0, ys.min() * 12 - 12), min(buf.shape[0], ys.max() * 12 + 24)
                 x0, x1 = max(0, xs.min() * 12 - 12), min(buf.shape[1], xs.max() * 12 + 24)
@@ -182,7 +184,7 @@ def medir_sincronia(viewport_mp4, atraso, duracao, intervalo=5.0, primeira=0.5):
     if not len(q):
         return None
     q = q.reshape(-1, 2, 12, 3).astype(int)
-    acesa = ((q[..., 0] > 170) & (q[..., 1] < 100) & (q[..., 2] > 170)).mean(axis=(1, 2)) > 0.6
+    acesa = ((q[..., 0] > 200) & (q[..., 1] < 50) & (q[..., 2] > 200)).mean(axis=(1, 2)) > 0.6
     inicios = [i / taxa for i in range(1, len(acesa)) if acesa[i] and not acesa[i - 1]]
     atrasos = []
     t = primeira

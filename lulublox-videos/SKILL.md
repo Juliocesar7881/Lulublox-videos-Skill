@@ -12,7 +12,7 @@ Turn an idea from the user ("make one about which slide is the fastest") into a 
 - Outfit: pink top with puffy short sleeves, a purple pleated skirt that opens with her legs (they never cut through it), and white sneakers with pink soles.
 - Animated with the **official Roblox packages** (Cartoony, Levitation and R15 emotes).
 
-The audience is kids. Read [references/production-rules.md](references/production-rules.md), [references/format.md](references/format.md) and [references/animkit.md](references/animkit.md) before starting.
+The audience is kids. Read [references/production-rules.md](references/production-rules.md), [references/format.md](references/format.md) and [references/animkit.md](references/animkit.md) before starting, and [references/youtube-studio.md](references/youtube-studio.md) before posting.
 
 **Everything is in English, always:** script, voice, captions, on-screen signs, video title, description, tags and file names. Never produce Portuguese or Spanish lines for this skill. After the voice lines are ready, run `scripts/fazer_short.py PROJECT`. It runs the audits, records, edits, reviews the captions and renders, and only finishes with the final MP4. `--so-conferir` only checks the delivery.
 
@@ -40,6 +40,9 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
 - `scripts/studio_runscript.py montar --kit --cenario studio/cenario.lua --cena studio/cena.lua --play --saida studio/pipeline.lua` installs this skill's AnimKit, builds the set, installs the scene and runs Play.
 - `scripts/studio_runscript.py rodar studio/pipeline.lua --place studio/base.rbxlx --gravar viewport.mp4` opens a new Studio window behind the user's windows and records **only that window**. Never record the whole desktop.
 - The user's own Studio windows are never touched.
+- **The display must be on to record.** With the monitor off or asleep, Studio does not draw the 3D viewport (the
+  window capture gets a black viewport at ~2-4 fps and never sees the start flash). Audits still work with the
+  display off: write and audit every scene, then record when the monitor is back.
 
 ## Workflow
 
@@ -55,15 +58,26 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
    - Expressions follow the emotion: `happy`, `smile`, `surprised`, `scared`, `scream`, `nervous`, `confident`, `angry`, `doubt`, `dizzy`, `squint`, `knockout` and **`wink`**, her signature.
    - Use dry cuts and `K.cortarPara` when she changes place.
    - Camera moves end before the next cut (`c.ate_corte`).
-6. **Automatic audit and fixes (mandatory)**: `K.auditar(noob)` (collisions) and `K.auditarCamera(noob)` (face rule) must end with `total 0`. Her hair, bow and skirt are soft parts (`Visual`) and are not audited. Then review the frames around every cut, including every 60 fps frame from 0.05 s before to 0.1 s after each cut.
+6. **Automatic audit and fixes (mandatory)**: `K.auditar(noob)` (collisions) and `K.auditarCamera(noob)` (face rule) must end with `total 0`. Her hair, bow and skirt are soft parts (`Visual`) and are not audited. In a batch, `python auditar.py NN-project ...` (copied from `modelos/base/`) runs `gerar_cena.py`, builds and plays each scene in Studio without recording and prints only the audit lines. Then review the frames around every cut, including every 60 fps frame from 0.05 s before to 0.1 s after each cut.
 7. **Edit** (`montar_edicao.py` → `roblox-video-editor` renderer, `"entrega": "shorts"`):
    - Karaoke captions in English, one idea at a time.
    - A chunk never ends on an article or preposition; "no", "not" and "never" are shown in coral.
    - SFX on every action.
    - Never cut an effect in the middle, and never cut before a zoom ends.
    - Short licensed music at −24 dB under the voice.
+   - **No effect over a spoken word**: `python conferir_sfx.py NN-project` (from `modelos/base/`) lists every effect
+     that plays over the voice; fix them all (move the action to a pause, pick a shorter sound or a pitch up).
+   - Stickers only in English: `wow-en`, `oops-en`, `haha-en` (plus `confete`, `interrogacao`, `estrelas-tontas`,
+     `check`). Never `wow`, `oops`, `kkkk` or `tum` (they read in Portuguese).
 8. **Final review**: `revisar_legendas.py` total 0, about −14 LUFS with peaks under −1.5 dBTP, Whisper transcript of the final audio in English, and frame checks.
 9. **Delivery** (`fazer_short.py PROJECT --so-conferir`): the final MP4 plus `publicacao.txt` with an English title, description, hashtags, music credits and voice credit.
+
+## Posting (LuluBlox YT)
+
+- Channel: **LuluBlox YT** only. Two videos per day, **09:00 and 18:00** of the same day (`lote.py agenda`).
+- Made for kids: yes. Category Gaming with the game title Roblox. Video language English.
+- `lote.py metadados` writes the SEO title/description/tags and the credits; the user makes the thumbnails.
+- The upload and scheduling steps in YouTube Studio are in [references/youtube-studio.md](references/youtube-studio.md).
 
 ## Content rules (kids)
 

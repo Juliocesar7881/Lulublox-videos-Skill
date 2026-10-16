@@ -1,0 +1,21 @@
+{
+  "videos_por_lote": 2,
+  "horarios": [
+    "09:00",
+    "18:00"
+  ],
+  "fuso": "America/Sao_Paulo",
+  "canal": {
+    "nome": "LuluBlox YT",
+    "id": "UCuSjAXe84Yzfi8BqN5SBQdw",
+    "handle": "",
+    "idioma_video": "English"
+  },
+  "feito_para_criancas": true,
+  "categoria": "Gaming",
+  "pasta_entregas": "~/Documents/entregas/lulublox",
+  "pastas_historico": [
+    "~/Documents/entregas/lulublox"
+  ],
+  "jogo": "Roblox"
+}

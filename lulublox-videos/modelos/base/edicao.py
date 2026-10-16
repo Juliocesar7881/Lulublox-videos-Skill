@@ -64,17 +64,19 @@ FX = {
     'mergulho': [OL + 'mergulho.mp3'],
     'bolhas': [OL + 'bolhas-curtas.mp3'],
     'boing_curto': [OL + 'boing-original.mp3'],
+    # Lulublox (criar_sfx_chuva.py): continuous rain bed, shorten with dur.
+    'chuva': [OL + 'chuva-continua.mp3'],
 }
 # Só sons contínuos (texturas/loops) podem ser encurtados com 'dur', e sempre com fade longo. Os outros tocam
 # inteiros: efeito cortado no meio é proibido (o cliente reprovou).
-CORTAVEIS = {'coracao', 'domino', 'vento', 'jato', 'regador', 'espuma', 'escorregar'}
+CORTAVEIS = {'chuva', 'coracao', 'domino', 'vento', 'jato', 'regador', 'espuma', 'escorregar'}
 GAIN = {'whoosh': -10, 'pop': -11, 'clique': -11, 'ding': -11, 'brilho': -12, 'impacto': -5, 'explosao': -7, 'soco': -7,
         'boing': -10, 'erro': -11, 'erro_curto': -11, 'apito': -12, 'coracao': -12, 'timpano': -9, 'trombone': -10,
         'engracado': -11, 'aplausos': -14, 'sucesso': -10, 'harpa': -12, 'pizzicato': -12, 'apito_desce': -13,
         'escorregar': -11, 'pum': -12, 'campainha': -12, 'grunhido': -12, 'bicho': -12,
         'domino': -15, 'onda': -9, 'espuma': -13, 'vento': -14,
         'apito_sobe': -13, 'jato': -15, 'regador': -15, 'respingo': -10, 'mergulho': -8, 'bolhas': -13,
-        'trombone_longo': -10, 'boing_curto': -11}
+        'trombone_longo': -10, 'boing_curto': -11, 'chuva': -24}
 
 
 class Edicao:

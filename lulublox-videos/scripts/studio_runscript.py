@@ -156,6 +156,30 @@ def mandar_para_tras(hwnd):
     user32.SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010)  # NOSIZE|NOMOVE|NOACTIVATE
 
 
+def trazer_para_frente(hwnd):
+    """Brings the recording Studio to the foreground. In the background Studio renders only a few frames per
+    second, and with nobody using the PC (overnight runs) Windows refuses SetForegroundWindow unless the
+    calling process just "pressed" a key: a virtual Alt tap lifts that lock (standard workaround)."""
+    if not user32:
+        return
+    VK_MENU, KEYEVENTF_KEYUP = 0x12, 0x2
+    user32.keybd_event(VK_MENU, 0, 0, 0)
+    user32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
+    user32.ShowWindow(hwnd, 9)  # SW_RESTORE
+    user32.SetForegroundWindow(hwnd)
+    user32.BringWindowToTop(hwnd)
+    # Covered by another window, Studio stops presenting frames to the capture: keep it topmost while it records
+    # (the window closes by itself at the end of the scene).
+    user32.SetWindowPos.argtypes = [wintypes.HWND, wintypes.HWND, ctypes.c_int, ctypes.c_int,
+                                    ctypes.c_int, ctypes.c_int, ctypes.c_uint]
+    user32.SetWindowPos(hwnd, wintypes.HWND(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0040)  # TOPMOST, NOSIZE|NOMOVE|SHOWWINDOW
+    fg = user32.GetForegroundWindow()
+    n = user32.GetWindowTextLengthW(fg)
+    buf = ctypes.create_unicode_buffer(n + 1)
+    user32.GetWindowTextW(fg, buf, n + 1)
+    print(f'[frente] janela em primeiro plano: {buf.value!r} (Studio {"sim" if fg == hwnd else "nao"})', flush=True)
+
+
 def rodar(a):
     exe = studio_exe()
     out_log = a.pipeline.with_suffix('.saida.log')
@@ -196,6 +220,10 @@ def rodar(a):
             if a.atras:
                 time.sleep(1.5)
                 mandar_para_tras(hwnd)
+            else:
+                time.sleep(1.0)
+                trazer_para_frente(hwnd)
+                threading.Timer(4.0, trazer_para_frente, args=(hwnd,)).start()
             g = Gravador(hwnd, a.gravar, fps=a.fps, log=log)
             # Passa duração esperada da cena para guarda temporal do flash2
             try:

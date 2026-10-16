@@ -46,7 +46,7 @@ def frames(ff, video, fps, scale_w):
 
 def is_magenta(px):
     r, g, b = px
-    return r > 220 and g < 50 and b > 220
+    return r > 235 and g < 25 and b > 235  # only the pure flash (Lulu wears saturated pink)
 
 
 def magenta_share(buf, w, h):
