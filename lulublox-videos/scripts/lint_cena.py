@@ -92,6 +92,12 @@ def checar(proj):
             if re.search(r'"segurarFrente(Junto)?"', l):
                 avisos.append(f'{nome}:{n}: segurarFrente brings her hands up to chin level in medium shots; '
                               'hold props low: { LeftShoulder = { 35, -15 }, RightShoulder = { 35, -15 }, LeftElbow = { 75, 0 }, RightElbow = { 75, 0 } }')
+            if re.search(r'"segurarAcima(Junto)?"', l):
+                avisos.append(f'{nome}:{n}: segurarAcima puts her hands at face height (root + 2.2): to hold something over '
+                              'her head use "esticarCima"')
+            if re.search(r'Color\s*=\s*c0:Lerp', l) and 'PELE' not in txt:
+                avisos.append(f'{nome}:{n}: tinting every body part turns her skin/face gray or brown; skip the skin parts '
+                              '(Head, arms, hands, legs, feet) and tint clothes and hair only')
 
     # timeline: lines never overlap, and not too many cuts
     tj, fj = proj / 'tempos.json', proj / 'falas' / 'falas.json'

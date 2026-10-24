@@ -61,6 +61,11 @@ small next to her: a "giant" prop must be 4+ studs. Plan with these numbers:
   that turns her back to it.
 - Cuts: 0–1 per video, only when the place or time changes. Hide a cut in a poof or a flash.
 
+- The face-size check is tight at 8.8+ studs: a lean back, a pull-back or a step away from the camera drops it below
+  8%. Start at 8.3–8.6 studs, or dolly in while she leans.
+- A slide that comes down TOWARD the camera (`K.escorregador` with `dir = V(0, 0, -1)`) lets her slide facing us;
+  sideways slides are profile shots. Use `largura = 5` or more and keep her arms up until she leaves the borders.
+
 ## 3. Hands and props
 
 - Hold things low against her belly, with arms `{ LeftShoulder = { 35, -15 }, RightShoulder = { 35, -15 },
@@ -102,6 +107,15 @@ small next to her: a "giant" prop must be 4+ studs. Plan with these numbers:
 - Lay out moving characters on paper first: list every path (puppy, vacuum) with its start and end points and
   times, and check the closest distance to her body (more than her half width 0.7 plus theirs).
 
+- Never weld an object (`soldar`) while an `arco()`/`mover()`/`animar()` still moves it: the next `PivotTo` of the
+  welded object drags her whole body (in the 2026-10-31 basketball she stayed in profile for the rest of the video).
+  Weld inside the animation's final callback, or let the flight end 0.15 s before the catch.
+- Two Lulus (clones, twins) side by side touch hands unless they are 4.6+ apart at the same depth; put the second
+  one ~2 studs further back instead. The `dancar` emote swings the arms ~2.7 studs: keep dancers 3.5+ apart.
+- In `cenario_corpo.lua` `CF` is `CFrame.new` (a function): write `CFrame.lookAt`, never `CF.lookAt`.
+- Leaning her (limbo, sneeze build-up): rotate around the FEET point, `CF(feet) * ANG(lean, 0, 0) * CF(0, ALT, 0) *
+  ROT`, and lift her 0.25 while leaning when she walks (the toes of the walk swing lower).
+
 ## 6. Timing and sound
 
 - Leave a pause after each impact before the next line (0.5–0.8 s), so the whole sound fits: `sfx_livre` swaps in
@@ -119,3 +133,27 @@ be visible" item visible? Also grep the audit log for Lua runtime errors (`attem
 Result of the 2026-10-17 batch (14 videos written with this checklist): 10 of 14 scenes passed the Studio audit on
 the first run. Four needed one fix each: a too-wide shot, a ride camera starting late, legs under the floor in the
 cake, and a cloud puff over her chest that was caught before running.
+
+Result of the 2026-10-31 batch (20 videos): lint caught a held prop at the chin and a too-bright flash before any
+run; 12 of 20 passed the Studio audit at once. The fixes: clones touching her hands (moved back), a hug ring and a
+lean-walk touching the table/floor, two face-size dips (camera closer), a CF.lookAt typo, the weld-while-flying bug
+above, and arms hitting the slide borders. `auditar.py` prints only 60 lines: read `NN/auditoria.log` for all of it.
+
+## 8. What the audit cannot see (contact-sheet lessons of 2026-10-31)
+
+The audit checks collisions and the face size, not what covers the face or whether the joke reads. Plan for these:
+
+- Anything in front of her face hides it: a pile she lands in (compute the surface height at HER spot, face at
+  ~6.5), a bubble from her mouth (grow it sideways and a bit back), held props, foam, a beard (put it on the chin,
+  under the mouth). `segurarAcimaJunto` / `segurarAcima` put the hands at FACE height (root + 2.2): holding
+  something over her head needs `esticarCima`.
+- Never tint the skin or the head (wet, chocolate, cold): it reads as a gray or sick face. Tint clothes and hair only
+  and put blobs on the skin where they contrast (cheeks, forearms, shins); brown on brown hair does not show.
+- The payoff object must be whole in the frame at its moment: a sign, a tent, a hoop or a gnome at x 4.4+ with the
+  camera at x 0.4-0.6 is cut. Keep key props within ~3.5 studs of the camera x at 9-11 studs depth.
+- A ceiling, a floor pattern or a spiral only reads if the camera sees it: give a ceiling its own color and beams,
+  tilt the camera toward it, and look down ~30 degrees at floor layouts.
+- Big props lying toward the camera (fallen giant dominoes) cover what is behind them.
+- Sitting (`sentadoReto`) with the legs toward the camera shows two blocks in front of her body: let her stand
+  in the pot/tub instead (legs hidden by its walls).
+- Lasers, ropes and beams that run toward the camera pass IN FRONT of her: end them before her depth.

@@ -21,7 +21,9 @@ if hasattr(sys.stdout, 'reconfigure'):
 def norm(t):
     t = unicodedata.normalize('NFKD', t)
     t = ''.join(c for c in t if not unicodedata.combining(c))
-    return re.sub(r'[^a-z0-9]', '', t.lower())
+    t = re.sub(r'[^a-z0-9]', '', t.lower())
+    # stretched words ("ACHOOOO", "Wheee", "Nooo") match however many letters Whisper writes
+    return re.sub(r'(.)\1+', r'\1', t)
 
 
 def palavras_do_texto(t):
