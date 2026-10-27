@@ -47,26 +47,59 @@ def main():
                          capture_output=True, check=True).stdout
     audio = np.frombuffer(raw, np.float32)
     dur = len(audio) / 16000
-    m = WhisperModel(a.modelo, device='cpu', compute_type='int8')
-    prompt = ' '.join(re.sub(r'\[[^\]]*\]', '', f['texto']).strip() for f in rot['falas'])
-    segs, _ = m.transcribe(audio, language='en', beam_size=5, word_timestamps=True, initial_prompt=prompt)
-    ws = [(norm(w.word), w.start, w.end) for s in segs for w in s.words if norm(w.word)]
-
-    # Sequence alignment (difflib) between the script words and the heard words: each line spans from its first to
-    # its last heard word that matched (a greedy prefix match broke on "rock" vs "Rocky").
+    # The full script as initial_prompt sometimes makes Whisper skip the first lines (it takes the prompt as text
+    # already transcribed and "continues" from the end): retry without the prompt, then with the first line only,
+    # then with a bigger model.
     import difflib
     roteiro = [(n, w) for n, lin in enumerate(linhas) for w in lin]
-    sm = difflib.SequenceMatcher(None, [w for _, w in roteiro], [w for w, _, _ in ws], autojunk=False)
-    mapa = {}
-    for blk in sm.get_matching_blocks():
-        for k in range(blk.size):
-            mapa[blk.a + k] = blk.b + k
-    faixa = []
-    for n in range(len(linhas)):
-        idx = [mapa[i] for i, (m, _) in enumerate(roteiro) if m == n and i in mapa]
-        if not idx:
-            raise SystemExit(f'line {n + 1} ("{" ".join(linhas[n])}") not found in the take: {[w for w, _, _ in ws]}')
-        faixa.append((min(idx), max(idx)))
+    prompt = ' '.join(re.sub(r'\[[^\]]*\]', '', f['texto']).strip() for f in rot['falas'])
+    primeira = re.sub(r'\[[^\]]*\]', '', rot['falas'][0]['texto']).strip()
+    tentativas = [(a.modelo, prompt), (a.modelo, None), (a.modelo, primeira), ('medium', None), ('medium', prompt)]
+    modelos, erro, ouvidos = {}, None, []
+
+    def alinhar(ws, chave):
+        """Line spans (first/last heard word index) by difflib alignment of the script words and the heard words."""
+        sm = difflib.SequenceMatcher(None, [chave(w) for _, w in roteiro], [chave(w) for w, _, _ in ws], autojunk=False)
+        mapa = {}
+        for blk in sm.get_matching_blocks():
+            for k in range(blk.size):
+                mapa[blk.a + k] = blk.b + k
+        faixa = []
+        for n in range(len(linhas)):
+            idx = [mapa[i] for i, (m, _) in enumerate(roteiro) if m == n and i in mapa]
+            if not idx:
+                return None, f'line {n + 1} ("{" ".join(linhas[n])}") not found in the take: {[w for w, _, _ in ws]}'
+            faixa.append((min(idx), max(idx)))
+        return faixa, None
+
+    def fonetica(w):
+        # last resort: first letter + consonants ("pup" = "pop", "we" = "whe" for a scream heard as a word)
+        return w[:1] + re.sub(r'[aeiouyh]', '', w[1:])
+
+    for nome_modelo, pr in tentativas:
+        if nome_modelo not in modelos:
+            modelos[nome_modelo] = WhisperModel(nome_modelo, device='cpu', compute_type='int8')
+        segs, _ = modelos[nome_modelo].transcribe(audio, language="en", beam_size=5, word_timestamps=True,
+                                                  initial_prompt=pr)
+        ws = [(norm(w.word), w.start, w.end) for s in segs for w in s.words if norm(w.word)]
+        rotulo = f'{nome_modelo}, prompt={"script" if pr == prompt else ("first line" if pr else "none")}'
+        ouvidos.append((rotulo, ws))
+        # Sequence alignment (difflib) between the script words and the heard words: each line spans from its first
+        # to its last heard word that matched (a greedy prefix match broke on "rock" vs "Rocky").
+        faixa, erro = alinhar(ws, lambda w: w)
+        if erro is None:
+            print(f'[whisper] {rotulo}')
+            break
+        print(f'[whisper] {rotulo}: {erro}')
+    if erro:
+        for rotulo, ws in ouvidos:
+            faixa, erro2 = alinhar(ws, fonetica)
+            if erro2 is None:
+                print(f'[whisper] {rotulo}, phonetic')
+                erro = None
+                break
+    if erro:
+        raise SystemExit(erro)
 
     # Energy (10 ms frames). Between two lines the cut goes at the start of the LONGEST silence (a gasp or laugh
     # from the next line's tag is sound, so it stays with its line); each piece is then trimmed of its

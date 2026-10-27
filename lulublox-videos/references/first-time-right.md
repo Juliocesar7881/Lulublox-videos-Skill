@@ -21,9 +21,21 @@ visible** (her face + the thing the joke is about). Then check each row:
 
 ## 2. Camera
 
-Lulu's real size, measured in renders (table of known width as the ruler): about **7 studs tall** (face around
-y 6.5-7) and about **4.5 studs wide** in the idle pose (arms out, puffy sleeves). A 3-stud "giant" pumpkin looks
-small next to her: a "giant" prop must be 4+ studs. Plan with these numbers:
+Lulu's real size, measured in renders (table of known width as the ruler): about **4.5 studs wide** in the idle pose
+(arms out, puffy sleeves). Heights, measured again on 2026-10-26 from the frames (the old "7 studs tall, face at
+y 6.5-7" was wrong and put a snow globe and a stack of hoops in front of her face): plan everything from her root
+(HumanoidRootPart, `K.ALTURA_RAIZ` = 3.41 above the floor):
+
+| point | height |
+|---|---|
+| belly / hands held low | root + 0 to + 0.3 |
+| chin | root + 1.1 |
+| face center (eyes) | root + 1.6 (about 5.0 above the floor) |
+| head top with hair and bow | root + 2.7 (she is about 6.1 tall) |
+| her hands in the idle pose | about 1.6 to the side of the root, at root - 1.2 |
+
+Anything in front of her must stay under root + 1.0, or be at her side. A 3-stud "giant" pumpkin looks small next to
+her: a "giant" prop must be 4+ studs. Plan with these numbers:
 
 - Width budget: at FOV 52 the frame is about 0.98 × distance wide, and the face rule (≥ 8%) caps the distance
   at about 9.5 studs, so the frame is at most about 9.3 studs wide. Her 4.5 studs plus the props must fit in about
@@ -33,6 +45,12 @@ small next to her: a "giant" prop must be 4+ studs. Plan with these numbers:
 - The joke object goes at least about 3.5 studs (x) from her root: an easel, wheel or oven closer than that ends
   up behind her arm (09 easel at 1.7, 08 wheel at 2.1, 12 oven at 1.6). A small character next to her (a bird, a
   kitten) needs its own spot beside her head or in front of her, never at her side where her arm hangs.
+- The recorded frame is narrower than the math above: at 8 studs only about **3.2-3.5 studs on each side of the
+  camera target** survive the crop (2026-10-26: drums at 2.8-4.1, a puppy at 3.4 and a box at 3.6 came out cut).
+  Keep every joke object within ~3 studs of the camera target x; when two props are far apart (drums on one side,
+  a harp on the other), pan the camera to each one at its moment (`cam.mover` in a pause) instead of a wide shot.
+- Counters, tables and carts at her side must start at least ~2.1 studs from her root x: her idle hands hang 1.6
+  out, and the audit flags a hand touching the edge.
 - Small props are tiny next to her: scale a sock, cookie or robot vacuum 1.5–2.2×.
 - Check the background right behind her head. A big round treetop or balloon there looks glued to her head.
 - Don't stack brown cylinders into a cone (it looks like a poop emoji). Use many thin gray tiers for a volcano.
@@ -75,6 +93,16 @@ small next to her: a "giant" prop must be 4+ studs. Plan with these numbers:
   never across her face.
 - Arms coming down from above go out to the sides first: `{ x 10, z 95 }`, then `nil`. Coming straight down
   through the front, the hands sweep through counters and tables.
+- Arm tables: the two numbers are `CFrame.Angles(x, 0, z)` on the shoulder (x raises the arm forward, z swings it
+  out; the left side mirrors z). A table that names only the right arm forces the LEFT arm straight down (identity),
+  not back to the idle animation. Arms rising from idle sweep through the front: next to a table or machine, go out
+  to the sides first (`{ 10, 95 }`) or straight up (`comemorar`).
+- A held tool that extends the arm (mallet, drumstick, stick) is welded along the hand's -Y: `soldar(tool, hand,
+  CF(0, -len/2 - 0.2, 0))`. For a whack/hit, the arm angle that reaches the target with the TOOL TIP leaves the
+  hand above the surface; compute both before choosing the pose (2026-10-26: a 55-degree slam put the hand in the
+  machine top, 72 degrees was right).
+- An instrument at her mouth (trombone, horn) points DOWN-right away from her face, held by one low hand; a
+  sideways one with both hands up covered her face.
 
 ## 4. Materials and light
 
