@@ -185,3 +185,26 @@ The audit checks collisions and the face size, not what covers the face or wheth
 - Sitting (`sentadoReto`) with the legs toward the camera shows two blocks in front of her body: let her stand
   in the pot/tub instead (legs hidden by its walls).
 - Lasers, ropes and beams that run toward the camera pass IN FRONT of her: end them before her depth.
+
+## 9. Lessons of the 28-video batch (2026-11-17)
+
+- **Camera distance**: the camera audit fails ("rosto pequeno") once the camera is more than ~9 studs from her face.
+  Keep the camera z at most ~8.5 in front of her (her at z 0.4 → camera z ≥ -8.1).
+- **Floors**: a wood/tile floor whose top is at the same height as the grass (0.2) z-fights and the grass flickers
+  through it on the recording. Make indoor floors 0.24 thick (top 0.24) and tiles/rugs at 0.25-0.27.
+- **Wide jokes**: when the joke needs more width than the 9:16 frame beside her (a mini-golf course with a windmill,
+  a pond and a hole), build it at full size beside her and PAN the camera to it and back in pauses, with
+  `K.inserto(true)` while she is out of frame. Cramming it next to her made it tiny and hidden (04 took 3 versions).
+- **Hands over the mouth**: crossed-arms/hug poses with shoulders 75 and elbows 70 put her hands over her mouth.
+  Use shoulders 35 / elbows 85 (arms crossed at the belly).
+- **Contrast**: a prop the same color as her top (a pink blanket on her pink shirt) disappears into her.
+- **Small animals** (a fairy, a bird, a bunny on a spring, a squirrel, a hamster) need about 2-2.5x to read on the
+  contact sheet; a 1.4x fairy was a dot.
+- **Waving next to a table**: the `acenar` emote swings the right arm down into a table on her right. Wave with an
+  arm pose instead (RightShoulder {160, 20} / {160, 50} alternating every 0.3 s).
+- **Idle reach**: her idle hand touched a counter top that started 2.0 from her root: keep tables/counters 2.4 away.
+- **Gaps between lines**: lint flags lines closer than ~0.2 s as overlapping.
+- **Ground animals**: a higher camera (y ~7, aiming down ~26°) keeps the ground at and behind her feet above the
+  caption band (ducklings, a panda in a hole).
+- **Voice split**: hyphenated words ("Jack-in-the-box", "Ta-da") are heard as separate words; `dividir_falas.py`
+  now splits the script words on hyphens.

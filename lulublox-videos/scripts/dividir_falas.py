@@ -27,7 +27,8 @@ def norm(t):
 
 
 def palavras_do_texto(t):
-    t = re.sub(r'\[[^\]]*\]', ' ', t)
+    # hyphenated words ("Jack-in-the-box", "Ta-da") are heard as separate words
+    t = re.sub(r'\[[^\]]*\]', ' ', t).replace('-', ' ')
     return [norm(w) for w in t.split() if norm(w)]
 
 
