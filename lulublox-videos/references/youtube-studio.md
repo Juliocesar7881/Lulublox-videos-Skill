@@ -67,6 +67,11 @@ await window.__escolher(/Idioma do v.deo|Video language/i, /^(Ingl.s|English)$/i
 ```
 
    The language list renders a moment after it opens: wait for the `Inglês` option (retry ~5 s) before clicking.
+   **Check the saved language afterwards** (2026-10-28): in 4 of 14 uploads the dialog showed `Inglês` but the video
+   was saved as `Português`. After scheduling the batch, open `studio.youtube.com/video/ID/edit`, click *Mostrar mais*
+   and read `Idioma do vídeo`; fix the wrong ones with real clicks (dropdown, then the `Inglês` option) and *Salvar*.
+   Inside the upload dialog the field is not reliable either way: after switching steps it may show `Português`
+   for a video that is saved in English. Only the edit page tells the truth.
 
 4. Category stays **Jogos/Gaming** (the account default). Focus the game title box from JS (`scrollIntoView`,
    `click()`, `focus()`; a coordinate click can land on another field after the dialog scrolls), or click the game title box (`input[aria-label="Título do jogo

@@ -1,6 +1,6 @@
 """English comic stickers for Lulublox (same style as the roblox-video-editor overlays, which are in Portuguese).
 
-Writes wow-en.png, oops-en.png and haha-en.png (512x512, transparent) to the roblox-video-editor overlays folder and a
+Writes wow-en, oops-en, haha-en, woof-en, oink-en, tweet-en, snip-en, splash-en and boop-en (.png) (512x512, transparent) to the roblox-video-editor overlays folder and a
 copy to this skill's assets/stickers/. Use them with ed.sticker('wow-en', ...), never 'wow'/'oops'/'kkkk' (UAU, OPS, KKKK).
 
     python criar_stickers_en.py
@@ -48,7 +48,14 @@ def main():
     COPIA.mkdir(parents=True, exist_ok=True)
     feitos = []
     for nome, msg, cor_estrela, tam, ang in (('wow-en', 'WOW!', (30, 185, 90, 255), 150, 6),
-                                              ('oops-en', 'OOPS!', (255, 80, 165, 255), 132, 5)):
+                                              ('oops-en', 'OOPS!', (255, 80, 165, 255), 132, 5),
+                                              # sound words for animals and actions (2026-10-28)
+                                              ('woof-en', 'WOOF!', (255, 150, 40, 255), 132, -6),
+                                              ('oink-en', 'OINK!', (255, 120, 170, 255), 140, 6),
+                                              ('tweet-en', 'TWEET!', (80, 190, 255, 255), 118, -5),
+                                              ('snip-en', 'SNIP!', (235, 70, 60, 255), 140, 7),
+                                              ('splash-en', 'SPLASH!', (40, 150, 245, 255), 104, -6),
+                                              ('boop-en', 'BOOP!', (170, 110, 255, 255), 136, 5)):
         img = Image.new('RGBA', (512, 512), (0, 0, 0, 0))
         estrela(ImageDraw.Draw(img), 256, 256, 250, 150, 13, cor_estrela, giro=0.2)
         texto(img, msg, tam, (255, 255, 255, 255), 9, ang)

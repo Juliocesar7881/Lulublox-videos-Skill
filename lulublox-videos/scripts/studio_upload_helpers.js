@@ -104,6 +104,7 @@ window.__fusoHora = async (hora) => {
 window.__programar = async () => {
   const espera = ms => new Promise(r => setTimeout(r, ms));
   const d = document.querySelector('ytcp-uploads-dialog');
+  const titulo = (window.__meta && window.__meta.titulo) || '';
   const btn = d.querySelector('#done-button');
   (btn.querySelector('button') || btn).click();
   for (let i = 0; i < 50; i++) {
@@ -113,6 +114,18 @@ window.__programar = async () => {
     if (dlg) {
       const a = [...dlg.querySelectorAll('a')].find(x => /youtube\.com\/shorts\/|youtu\.be\//.test(x.href));
       return {link: a && a.href.replace(/\?.*$/, ''), quando: (dlg.innerText.match(/(?:em|on|for) (.*?\d{1,2}:\d{2}(?:\s?[AP]M)?)/i) || [])[1]};
+    }
+    // sometimes Studio shows "Processing video" instead of "Video scheduled" (2026-10-28): close it and read the
+    // video id from its row in the content list
+    const proc = [...document.querySelectorAll('ytcp-dialog, tp-yt-paper-dialog, ytcp-uploads-still-processing-dialog')].find(x => x.offsetParent && /Processando v.deo|Processing video/i.test(x.innerText || ''));
+    if (proc) {
+      const fechar = [...proc.querySelectorAll('ytcp-button, button')].find(b => /^(fechar|close)$/i.test((b.innerText || '').trim()));
+      if (fechar) (fechar.querySelector('button') || fechar).click();
+      await espera(2500);
+      const row = [...document.querySelectorAll('ytcp-video-row')].find(r => (r.innerText || '').includes(titulo.slice(0, 40)));
+      const a = row && [...row.querySelectorAll('a')].find(x => /\/video\/[\w-]{11}\//.test(x.href));
+      const id = a && a.href.match(/\/video\/([\w-]{11})\//)[1];
+      return {link: id ? 'https://youtube.com/shorts/' + id : null, quando: null, via: 'processing'};
     }
   }
   return {erro: 'dialog did not appear'};
