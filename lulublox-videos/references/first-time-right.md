@@ -208,3 +208,23 @@ The audit checks collisions and the face size, not what covers the face or wheth
   caption band (ducklings, a panda in a hole).
 - **Voice split**: hyphenated words ("Jack-in-the-box", "Ta-da") are heard as separate words; `dividir_falas.py`
   now splits the script words on hyphens.
+
+## 10. Lessons of the 12-video batch (2026-12-08)
+
+- **Prop that must touch the joke** (a brush in a crocodile's mouth, a marshmallow over a campfire, a sponge on a
+  puppy's head): do not guess where her hand ends up. Weld the prop along the hand's +X (`soldar(prop, RightHand,
+  CF(0.3, -0.05, 0))`), put the arm in the pose and measure the prop in the scene's Lua BEFORE `K.rodar` (it runs
+  before the recording): `K.bracos(noob, POSE, 0.01)`, wait 8 `RunService.Stepped`, read the part's `Position`,
+  `print("[medida] ...")` (it lands in `studio/pipeline.saida.log`), place the crocodile/fire/tub from it, then
+  `K.bracos(noob, nil, 0.01)`. Weld once there (not again in `preparar()`). For Lulu at (-1.3, 0, 0.4) the pose
+  `{ RightShoulder = { 60, 0 }, RightElbow = { 25, 0 } }` put the hand at about (0.17, 3.98, -1.2).
+- **Animals that must read** (crocodile): profile or 3/4 with the long snout and the teeth visible. Seen from the
+  front it read as a frog.
+- **Payoff at the left edge**: in 07, 08 and 09 the snowman, kitten and gingerbread house came out small at the
+  left edge. Keep the payoff 1.5-2.5 studs left of the camera target and big (a snowman as tall as her).
+- **Ground in front of her** is in the caption band: a prop that ends there (a wheel, a fallen scooter) parks
+  behind her plane (z 2-3) instead.
+- **Wrapping her** (a gift box around her body): the box must be wider than her arms (4.3) and deeper than the
+  skirt hem (2.8), or the skirt and the arms poke out.
+- **A light Fabric rug** under her feet renders as a dark disc: use SmoothPlastic, as for white cloth.
+- **Studio upload**: 4 of 12 videos again saved the language as Portuguese. Always check the edit page afterwards.
