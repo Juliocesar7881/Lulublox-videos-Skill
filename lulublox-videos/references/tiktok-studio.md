@@ -35,6 +35,8 @@ shows `lulublox.yt` before the first upload.
 8. `python scripts/lote.py marcar LOTE N agendado --tiktok`. There is no public link before the post goes live. At the
    end, check `https://www.tiktok.com/tiktokstudio/content`: each row shows the date and `GMT-3 Sao Paulo`.
 
+`file_upload` works inside `browser_batch`, but the 10 MB limit counts the whole batch: one video per batch.
+
 For many videos, keep the captions out of the conversation: write the queue as a JSON file, create a temporary
 `<input type=file>` in the page, send the JSON with `file_upload`, read it with `files[0].text()` and call `__tt` by index.
 
