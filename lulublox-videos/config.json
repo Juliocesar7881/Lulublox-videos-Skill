@@ -1,8 +1,10 @@
 {
-  "videos_por_lote": 2,
+  "videos_por_lote": 4,
   "horarios": [
     "09:00",
-    "18:00"
+    "11:45",
+    "18:00",
+    "19:00"
   ],
   "fuso": "America/Sao_Paulo",
   "canal": {

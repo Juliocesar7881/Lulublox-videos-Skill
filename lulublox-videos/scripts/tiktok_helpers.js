@@ -1,8 +1,9 @@
 // Run once in the TikTok Studio tab (javascript_tool). Then, on an upload page with the caption box empty:
-//   await __tt(TEXTO, HASHTAGS, 'HH', 'YYYY-MM-DD', false)   fills the form and returns what it would schedule
-//   await __tt(TEXTO, HASHTAGS, 'HH', 'YYYY-MM-DD', true)    same, and clicks Schedule if everything matches
+//   await __tt(TEXTO, HASHTAGS, 'HH:MM', 'YYYY-MM-DD', false)   fills the form and returns what it would schedule
+//   await __tt(TEXTO, HASHTAGS, 'HH:MM', 'YYYY-MM-DD', true)    same, and clicks Schedule if everything matches
 // TEXTO and HASHTAGS come from `lote.py pacote`. Never use execCommand in this box: it corrupts the editor.
-window.__tt = async (TEXTO, TAGS, HH, DATA, agendar) => {
+window.__tt = async (TEXTO, TAGS, HORA, DATA, agendar) => {
+  const [HH, MM = '00'] = HORA.split(':');
   const esp = ms => new Promise(r => setTimeout(r, ms));
   const e = document.querySelector('.public-DraftEditor-content');
   const col = s => { const dt = new DataTransfer(); dt.setData('text/plain', s); e.dispatchEvent(new ClipboardEvent('paste', {clipboardData: dt, bubbles: true, cancelable: true})); };
@@ -21,7 +22,7 @@ window.__tt = async (TEXTO, TAGS, HH, DATA, agendar) => {
   const [ih, id] = document.querySelectorAll('input.TUXTextInputCore-input');
   ih.click(); await esp(500);
   [...document.querySelectorAll('.tiktok-timepicker-left')].find(x => x.innerText.trim() === HH)?.click(); await esp(300);
-  if (ih.value.slice(3) !== '00') { [...document.querySelectorAll('.tiktok-timepicker-right')].find(x => x.innerText.trim() === '00')?.click(); await esp(300); }
+  if (ih.value.slice(3) !== MM) { [...document.querySelectorAll('.tiktok-timepicker-right')].find(x => x.innerText.trim() === MM)?.click(); await esp(300); }
   document.body.click(); await esp(300);
   id.click(); await esp(500);
   const c = document.querySelector('.calendar-wrapper');
@@ -32,7 +33,7 @@ window.__tt = async (TEXTO, TAGS, HH, DATA, agendar) => {
   (dia > 15 ? ds.at(-1) : ds[0])?.click(); await esp(500);
   const res = {hora: ih.value, data: id.value, tags: e.querySelectorAll('.mention').length, cont: (document.body.innerText.match(/\d+\/4000/) || [])[0]};
   const b = document.querySelector('[data-e2e=post_video_button]');
-  res.ok = ih.value === HH + ':00' && id.value === DATA && r.checked && b.innerText.trim() === 'Schedule' && res.tags >= 5;
+  res.ok = ih.value === HH + ':' + MM && id.value === DATA && r.checked && b.innerText.trim() === 'Schedule' && res.tags >= 5;
   if (agendar && res.ok) { b.click(); await esp(3500); res.fim = location.pathname; }
   return JSON.stringify(res);
 };

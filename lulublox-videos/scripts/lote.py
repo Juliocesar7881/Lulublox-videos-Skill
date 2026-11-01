@@ -1,4 +1,4 @@
-"""Lulublox batch: original English Shorts starring Lulu, YouTube SEO and posting twice a day (09:00 and 18:00).
+"""Lulublox batch: original English Shorts starring Lulu, YouTube SEO and posting four times a day (config.json).
 
   python lote.py novo [--data YYYY-MM-DD]          creates entregas/lulu-YYYYMMDD with 2 empty projects
   python lote.py historico                        script log + premises found in entregas/ (originality check)
@@ -7,7 +7,7 @@
   python lote.py metadados LOTE                   publicacao.json / publicacao.txt validated for YouTube
   python lote.py painel LOTE                      revisao.html: the videos with title, description, tags and time
   python lote.py agenda LOTE [--inicio YYYY-MM-DD] [--agora]
-                                                  agenda.json: 09:00 and 18:00 of the same day (first day with both
+                                                  agenda.json: the times of config.json on the same day (first day with all
                                                   slots still ahead); --agora = publish now (test runs the user asks for)
   python lote.py marcar LOTE N STATUS [--link URL] [--tiktok]
                                                   records the Studio result (--tiktok: the TikTok one)
@@ -283,7 +283,7 @@ video{{width:200px;aspect-ratio:9/16;border-radius:8px;background:#000;flex:none
 pre{{white-space:pre-wrap;font:13px system-ui;margin:6px 0}} .meta,.tags{{color:var(--mut);font-size:13px}} .erro{{color:var(--err)}}
 @media (max-width:600px){{article{{flex-direction:column}} video{{width:100%}}}}</style>
 <h1>Batch {html.escape(lote.name)}: {len(cards)} videos</h1>
-<p>Two videos a day, at 09:00 and 18:00. The channel owner adds the thumbnails.</p>{''.join(cards)}'''
+<p>Schedule: {', '.join(config()['horarios'])}. The channel owner adds the thumbnails.</p>{''.join(cards)}'''
     (lote / 'revisao.html').write_text(pagina, encoding='utf-8')
     print(lote / 'revisao.html')
 
@@ -309,8 +309,8 @@ def cmd_agenda(a):
         # Test run the user asked to see right away: every video goes public now.
         slots = [agora] * len(ps)
     else:
-        # Every day has all the slots of config['horarios'] (09:00 and 18:00): the pair goes out on the same day,
-        # so the first day used is the first one whose earliest slot is still at least 30 min ahead.
+        # Every day has all the slots of config['horarios']: they go out on the same day, so the first day used is
+        # the first one whose earliest slot is still at least 30 min ahead.
         primeiro = min(c['horarios'])
         hh, mm = map(int, primeiro.split(':'))
         inicio = dt.date.fromisoformat(a.inicio) if a.inicio else agora.date()

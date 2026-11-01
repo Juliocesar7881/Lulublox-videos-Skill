@@ -8,7 +8,7 @@
 //   3. type __meta.tags.join(', ') + ',' with real keys; poll the game box (it reads empty while "Saving...");
 //      check __chips() === __meta.tags.length, then  await __passo3()  (Next x3, opens the date picker).
 //   4. ctrl+a, type the date in the box's format ("Oct 31, 2026" / "31 de out. de 2026"), Return;
-//      await __fusoHora('09:00' | '18:00')  -> check fuso GMT-0300, hora and the date in `resumo`.
+//      await __fusoHora('09:00' | '11:45' | '18:00' | '19:00')  -> check fuso GMT-0300, hora and the date in `resumo`.
 //   5. await __programar()  -> {link, quando}; then  lote.py marcar LOTE N agendado --link LINK
 //      (copy the link from THIS result, never type it from memory).
 window.__criar = () => document.querySelector('ytcp-button#create-icon') || [...document.querySelectorAll('ytcp-button')].find(e => /^(criar|create)$/i.test((e.innerText || '').trim()) && e.offsetParent);

@@ -28,7 +28,7 @@ shows `lulublox.yt` before the first upload.
 5. Wait about 6 s for `Uploaded`. Dismiss tips with **Got it**. On **Turn on automatic content checks?** click
    **Cancel**: it is a setting and the user did not ask for it.
 6. Click the caption box, real keys `ctrl+a` and `Delete` to clear the file name.
-7. `await __tt(TEXTO, HASHTAGS, 'HH', 'YYYY-MM-DD', true)`. It pastes the text, adds each hashtag and picks it from
+7. `await __tt(TEXTO, HASHTAGS, 'HH:MM', 'YYYY-MM-DD', true)`. It pastes the text, adds each hashtag and picks it from
    the suggestion list, selects Schedule, sets the time and the date, checks them and clicks **Schedule**. With `false`
    it fills the form and stops. It returns `hora`, `data`, `tags` (linked hashtags), `cont` and `ok`; `fim` is
    `/tiktokstudio/content` when it scheduled. If `ok` is false it did not schedule: look at the page.

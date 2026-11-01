@@ -11,7 +11,7 @@ or channel settings.
 
 | Field | Value |
 |---|---|
-| Schedule | **09:00 and 18:00 of the same day**, time zone `(GMT-0300) Local time` (America/Sao_Paulo). `lote.py agenda` fills the slots. |
+| Schedule | **09:00, 11:45, 18:00 and 19:00 of the same day** (from 2026-12-14; 09:00 and 18:00 before that), time zone `(GMT-0300) Local time` (America/Sao_Paulo). `lote.py agenda` fills the slots. |
 | Audience | Channel default (`config.json`): **made for kids** (`VIDEO_MADE_FOR_KIDS_MFK`). A batch can override it in `lote.json` / `roteiro.json` (`"feito_para_criancas": false`, e.g. the 2026-10-23 engagement test) and then uses `VIDEO_MADE_FOR_KIDS_NOT_MFK`; `lote.py metadados/agenda` carry the choice to `publicacao.json` and `agenda.json`. |
 | Paid promotion | No (`VIDEO_PAID_PRODUCT_PLACEMENT_NO`) |
 | Altered content | No (`VIDEO_HAS_ALTERED_CONTENT_NO`) |
@@ -80,7 +80,7 @@ await window.__escolher(/Idioma do v.deo|Video language/i, /^(Ingl.s|English)$/i
    number of chips (`ytcp-chip, ytcp-free-text-chip`) equals the number of tags.
 6. Next ×3 (`#next-button`), open scheduling (`#second-container-expand-button`), open the date picker
    (`#datepicker-trigger`), select the date input and type the date in the UI format (`17 de out. de 2026`) + Enter.
-   Time zone button → `(GMT-0300) Horário local`. Click the time input and pick the `09:00` or `18:00` option.
+   Time zone button → `(GMT-0300) Horário local`. Click the time input and pick the exact option. The list has 96 options, every 15 minutes: another minute (11:40) is not in it, and a typed time can be saved as 00:00.
    Before `#done-button` (**Programar**), check the date, the time and `GMT-0300` in the dialog.
 7. Close the "Entendi/Got it" notice; the share dialog shows "Vídeo programado … DATE às HH:MM" and the Shorts
    link. Save it with `python scripts/lote.py marcar LOTE N agendado --link URL`.
