@@ -398,7 +398,7 @@ def cmd_tiktok(a):
 
 def mp4_tiktok(origem, destino):
     """TikTok's CSP blocks servidor_envio.py, so the upload goes through the browser tool, limited to 10 MB."""
-    limite = int(9.8 * 1024 * 1024)
+    limite = 9_700_000
     if origem.stat().st_size <= limite:
         shutil.copy2(origem, destino)
         return
