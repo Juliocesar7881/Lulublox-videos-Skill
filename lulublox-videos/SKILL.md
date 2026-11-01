@@ -78,7 +78,7 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
 
 ## Posting
 
-- Channel: **LuluBlox YT** by default; a batch can name another channel of the user in `lote.json` (`"canal"`, e.g. Phonkfox @PHONKFOXS from 2026-10-17). Four videos per day from 2026-12-14, **09:00, 11:45, 18:00 and 19:00** of the same day (`lote.py agenda`). The YouTube list only offers steps of 15 minutes.
+- Channel: **LuluBlox YT** by default; a batch can name another channel of the user in `lote.json` (`"canal"`, e.g. Phonkfox @PHONKFOXS from 2026-10-17). Four videos per day from 2026-12-14, **09:00, 11:45, 18:00 and 20:00** of the same day (`lote.py agenda`). The YouTube list only offers steps of 15 minutes.
 - Made for kids: the channel default, unless `lote.json`/`roteiro.json` say `"feito_para_criancas": false` (comments on). Category Gaming with the game title Roblox. Video language English.
 - `lote.py metadados` writes the SEO title/description/tags and the credits; the user makes the thumbnails.
 - The upload and scheduling steps in YouTube Studio are in [references/youtube-studio.md](references/youtube-studio.md).

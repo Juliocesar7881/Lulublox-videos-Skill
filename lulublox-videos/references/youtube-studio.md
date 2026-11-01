@@ -11,7 +11,7 @@ or channel settings.
 
 | Field | Value |
 |---|---|
-| Schedule | **09:00, 11:45, 18:00 and 19:00 of the same day** (from 2026-12-14; 09:00 and 18:00 before that), time zone `(GMT-0300) Local time` (America/Sao_Paulo). `lote.py agenda` fills the slots. |
+| Schedule | **09:00, 11:45, 18:00 and 20:00 of the same day** (from 2026-12-14; 09:00 and 18:00 before that), time zone `(GMT-0300) Local time` (America/Sao_Paulo). `lote.py agenda` fills the slots. |
 | Audience | Channel default (`config.json`): **made for kids** (`VIDEO_MADE_FOR_KIDS_MFK`). A batch can override it in `lote.json` / `roteiro.json` (`"feito_para_criancas": false`, e.g. the 2026-10-23 engagement test) and then uses `VIDEO_MADE_FOR_KIDS_NOT_MFK`; `lote.py metadados/agenda` carry the choice to `publicacao.json` and `agenda.json`. |
 | Paid promotion | No (`VIDEO_PAID_PRODUCT_PLACEMENT_NO`) |
 | Altered content | No (`VIDEO_HAS_ALTERED_CONTENT_NO`) |
