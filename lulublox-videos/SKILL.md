@@ -82,6 +82,7 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
 - Made for kids: the channel default, unless `lote.json`/`roteiro.json` say `"feito_para_criancas": false` (comments on). Category Gaming with the game title Roblox. Video language English.
 - `lote.py metadados` writes the SEO title/description/tags and the credits; the user makes the thumbnails.
 - The upload and scheduling steps in YouTube Studio are in [references/youtube-studio.md](references/youtube-studio.md).
+- TikTok: every LuluBlox YT video also goes to **@lulublox.yt** at the same date and time, with the same title, description and tags (`lote.py tiktok`, `lote.py pacote`). TikTok only schedules about 10 days ahead, so later videos wait for the next round. Steps in [references/tiktok-studio.md](references/tiktok-studio.md).
 
 ## Content rules (kids)
 

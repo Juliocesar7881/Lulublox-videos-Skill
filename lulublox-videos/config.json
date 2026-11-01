@@ -11,6 +11,10 @@
     "handle": "",
     "idioma_video": "English"
   },
+  "tiktok": {
+    "handle": "@lulublox.yt",
+    "dias_agendamento": 10
+  },
   "feito_para_criancas": true,
   "categoria": "Gaming",
   "pasta_entregas": "~/Documents/entregas/lulublox",

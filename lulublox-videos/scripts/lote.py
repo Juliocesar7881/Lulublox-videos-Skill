@@ -9,11 +9,14 @@
   python lote.py agenda LOTE [--inicio YYYY-MM-DD] [--agora]
                                                   agenda.json: 09:00 and 18:00 of the same day (first day with both
                                                   slots still ahead); --agora = publish now (test runs the user asks for)
-  python lote.py marcar LOTE N STATUS [--link URL] records the Studio result
+  python lote.py marcar LOTE N STATUS [--link URL] [--tiktok]
+                                                  records the Studio result (--tiktok: the TikTok one)
+  python lote.py tiktok [--dias N]                videos of every batch that fit the TikTok scheduling window
+  python lote.py pacote LOTE N                    final-tiktok/: MP4 under the 10 MB browser limit + caption JSON
   python lote.py status LOTE                      summary: produced, metadata, posted
 Settings in config.json (overridden by config.local.json).
 """
-import argparse, datetime as dt, html, json, re, shutil, subprocess, sys
+import argparse, datetime as dt, html, json, os, re, shutil, subprocess, sys
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -287,15 +290,19 @@ pre{{white-space:pre-wrap;font:13px system-ui;margin:6px 0}} .meta,.tags{{color:
 
 # ---------------------------------------------------------------- agenda
 
-def cmd_agenda(a):
-    c = config()
-    lote = Path(a.lote).resolve()
+def fuso_de(c):
     try:
-        fuso = ZoneInfo(c['fuso'])
+        return ZoneInfo(c['fuso'])
     except ZoneInfoNotFoundError:  # Windows sem o pacote tzdata: Brasília não tem horário de verão desde 2019
         if c['fuso'] != 'America/Sao_Paulo':
             raise SystemExit('install the time zone data: pip install tzdata')
-        fuso = dt.timezone(dt.timedelta(hours=-3), 'BRT')
+        return dt.timezone(dt.timedelta(hours=-3), 'BRT')
+
+
+def cmd_agenda(a):
+    c = config()
+    lote = Path(a.lote).resolve()
+    fuso = fuso_de(c)
     agora = dt.datetime.now(fuso)
     ps = projetos(lote)
     if a.agora:
@@ -343,13 +350,86 @@ def cmd_marcar(a):
     agenda = ler(lote / 'agenda.json')
     for it in agenda['itens']:
         if it['n'] == a.n.zfill(2):
-            it['status'] = a.status
+            prefixo = 'tiktok_' if a.tiktok else ''
+            it[prefixo + 'status'] = a.status
             if a.link:
-                it['link'] = a.link
+                it[prefixo + 'link'] = a.link
             gravar(lote / 'agenda.json', agenda)
-            print(f'{it["n"]}: {a.status} {a.link or ""}')
+            print(f'{it["n"]}: {"TikTok " if a.tiktok else ""}{a.status} {a.link or ""}')
             return
     raise SystemExit('video not found in the agenda')
+
+
+def legenda_tiktok(titulo, descricao, tags):
+    """TikTok has one text box: title + description are pasted, then every hashtag and tag is typed at the end."""
+    marca = re.compile(r'(?<!\S)#\S+')
+    nomes = marca.findall(titulo) + marca.findall(descricao) + ['#' + re.sub(r'\W', '', t) for t in tags]
+    vistos, hashtags = set(), []
+    for h in nomes:
+        if len(h) > 1 and h.lower() not in vistos:
+            vistos.add(h.lower())
+            hashtags.append(h)
+    limpar = lambda s: re.sub(r' {2,}', ' ', marca.sub('', s)).strip()
+    texto = re.sub(r'\n[ \t]*\n[ \t\n]*', '\n\n', limpar(titulo) + '\n\n' + limpar(descricao)) + '\n\n'
+    total = len(texto) + sum(len(h) + 1 for h in hashtags)
+    if total > 4000:
+        raise SystemExit(f'TikTok caption too long: {total} of 4000 characters')
+    return {'texto': texto, 'hashtags': hashtags}
+
+
+def cmd_tiktok(a):
+    c = config()
+    agora = dt.datetime.now(fuso_de(c)).replace(tzinfo=None)
+    fim = agora + dt.timedelta(days=a.dias or c['tiktok']['dias_agendamento'])
+    achados = []
+    for arq in caminho(c['pasta_entregas']).glob('*/agenda.json'):
+        agenda = ler(arq)
+        if not agenda.get('canal', '').startswith(c['canal']['nome']):
+            continue
+        for it in agenda['itens']:
+            quando = dt.datetime.strptime(it['quando'], '%Y-%m-%d %H:%M')
+            if it['status'] in ('agendado', 'publicado') and not it.get('tiktok_status') \
+                    and agora + dt.timedelta(minutes=15) < quando < fim:
+                achados.append((it['quando'], arq.parent.name, it['n'], it['projeto']))
+    for quando, lote, n, proj in sorted(achados):
+        print(f'{quando}  {lote}  {n}  {proj}')
+    print(f'{len(achados)} video(s) to schedule on TikTok ({c["tiktok"]["handle"]}), until {fim:%Y-%m-%d %H:%M}')
+
+
+def mp4_tiktok(origem, destino):
+    """TikTok's CSP blocks servidor_envio.py, so the upload goes through the browser tool, limited to 10 MB."""
+    limite = int(9.8 * 1024 * 1024)
+    if origem.stat().st_size <= limite:
+        shutil.copy2(origem, destino)
+        return
+    dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(origem)],
+                               capture_output=True, text=True, check=True).stdout)
+    kbps = int(limite * 0.95 * 8 / 1000 / dur) - 128
+    base = ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-i', str(origem), '-vf', 'fps=30', '-c:v', 'libx264',
+            '-preset', 'medium', '-b:v', f'{kbps}k', '-pix_fmt', 'yuv420p', '-passlogfile', str(destino.with_suffix(''))]
+    subprocess.run(base + ['-pass', '1', '-an', '-f', 'null', os.devnull], check=True)
+    subprocess.run(base + ['-pass', '2', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', str(destino)], check=True)
+    for f in destino.parent.glob(destino.stem + '*.log*'):
+        f.unlink()
+    if destino.stat().st_size > 10 * 1000 * 1000:
+        raise SystemExit(f'{destino.name} is still over 10 MB')
+
+
+def cmd_pacote(a):
+    lote = Path(a.lote).resolve()
+    it = next((x for x in ler(lote / 'agenda.json')['itens'] if x['n'] == a.n.zfill(2)), None)
+    if not it:
+        raise SystemExit('video not found in the agenda')
+    origem = Path(it['video'])
+    pasta = lote / it['projeto'] / 'final-tiktok'
+    pasta.mkdir(exist_ok=True)
+    destino = pasta / origem.name
+    if not destino.exists():
+        mp4_tiktok(origem, destino)
+    leg = legenda_tiktok(it['titulo'], it['descricao'], it['tags'])
+    gravar(pasta / 'legenda.json', leg | {'quando': it['quando']})
+    print(f'{destino} ({destino.stat().st_size / 1e6:.1f} MB)')
+    print(json.dumps(leg, ensure_ascii=False))
 
 
 def cmd_status(a):
@@ -361,8 +441,9 @@ def cmd_status(a):
         pronto = bool(rot.get('arquivo')) and (p / 'final-en' / rot['arquivo']).exists()
         meta = (p / 'publicacao.json').exists()
         ag = st.get(p.name[:2])
+        tt = f' | TikTok {ag["tiktok_status"]} {ag.get("tiktok_link") or ""}'.rstrip() if ag and ag.get('tiktok_status') else ''
         print(f'{p.name.ljust(32)} {"video" if pronto else "-----"} {"meta" if meta else "----"} '
-              f'{(ag["status"] + " " + ag["quando"] + (" " + ag["link"] if ag.get("link") else "")) if ag else ""}')
+              f'{(ag["status"] + " " + ag["quando"] + (" " + ag["link"] if ag.get("link") else "")) if ag else ""}{tt}')
 
 
 def main():
@@ -376,7 +457,9 @@ def main():
     s = sub.add_parser('painel'); s.add_argument('lote')
     s = sub.add_parser('agenda'); s.add_argument('lote'); s.add_argument('--inicio'); s.add_argument('--agora', action='store_true')
     s = sub.add_parser('marcar'); s.add_argument('lote'); s.add_argument('n')
-    s.add_argument('status', choices=['agendado', 'publicado', 'erro', 'pendente']); s.add_argument('--link')
+    s.add_argument('status', choices=['agendado', 'publicado', 'erro', 'pendente']); s.add_argument('--link'); s.add_argument('--tiktok', action='store_true')
+    s = sub.add_parser('tiktok'); s.add_argument('--dias', type=int)
+    s = sub.add_parser('pacote'); s.add_argument('lote'); s.add_argument('n')
     s = sub.add_parser('status'); s.add_argument('lote')
     a = ap.parse_args()
     globals()['cmd_' + a.cmd](a)
