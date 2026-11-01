@@ -48,6 +48,11 @@ stop. The user approved it for @lulublox.yt on 2026-11-01 and it did not come ba
 
 ## Traps
 
+- **Scheduling limit.** On 2026-11-01 the 52nd scheduled post (50 still pending) was refused with a toast, "You can
+  only schedule up to 30 posts.", on any date. The form stays open, nothing changes on screen and the toast is gone
+  in seconds: `fim` staying `/tiktokstudio/upload` after `ok: true` means it did **not** schedule. 42 and then 9 more
+  had passed on the same day, so the exact rule is unknown. Never click again in a loop or look for a way around it:
+  discard the upload and tell the user.
 - **Never use `document.execCommand` in the caption box.** The text appears on screen but the editor state does not
   get it (wrong counter), and the next `Delete` crashes the page with "Something went wrong" (2026-11-01). A synthetic
   `paste` event works, and so does a synthetic `keydown` Enter with `keyCode` 13 to pick a suggestion.
