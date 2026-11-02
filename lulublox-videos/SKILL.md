@@ -46,7 +46,7 @@ Roblox Studio's command-line task runs a script on the place in edit mode and st
 
 ## Workflow
 
-1. **Project and original idea**: create `entregas/<topic>-<date>`. Copy `modelos/base/` (`comum.py`, `edicao.py`, `cenario_comum.lua`) next to the project folders as in a batch: each project has `gerar_cena.py`, `montar_edicao.py`, `studio/cenario_corpo.lua` and `roteiro.json`.
+1. **Project and original idea**: create `entregas/<topic>-<date>`. Copy `modelos/base/` (`comum.py`, `edicao.py`, `cenario_comum.lua`) next to the project folders as in a batch: each project has `gerar_cena.py`, `montar_edicao.py`, `studio/cenario_corpo.lua` and `roteiro.json`. For a big batch (dozens of videos), also copy `modelos/kit/` into the batch folder: shared sets and animals (`kit_lulu.lua`), scene and edit shortcuts (`kit_cena.py`), one source bundle per group of videos (`dividir_src.py`), a recording queue (`produzir_fila.sh`, `fila.sh`), review sheets (`ver.py`, `conferir_cortes.py`), voice cuts (`recorte.py`) and scheduling (`agendar_fila.py`, written for 2 videos a day at 11:45 and 20:00: change the start date and slots). See section 11 of [references/first-time-right.md](references/first-time-right.md).
 2. **Script** (`roteiro.json`): English `texto` for each line, `titulo`, `arquivo` (MP4 name), `"idiomas": ["en"]`, `vozes`, `destaques` (words in yellow) and a plan per line. Short lines, one idea each, with an emotion tag for ElevenLabs. Format in [references/format.md](references/format.md).
 3. **Voice**: as described above.
 3b. **Plan every shot before writing Lua** ([references/first-time-right.md](references/first-time-right.md)): a beat

@@ -25,6 +25,13 @@ or channel settings.
 The Studio UI of this account is in **Portuguese** (Criar, Enviar vídeos, Mostrar mais, Próxima, Programar,
 Entendi, Horário local). The snippets below accept the Portuguese and English labels.
 
+For a big batch, paste `scripts/studio_upload_helpers.js` once in the Studio tab and do each video in ONE
+`browser_batch` (about 1 minute each): `await __abre('NN')`, type "Roblox", wait 2, `(await __meio())[1]`, ctrl+a,
+type the date ("3 de dez. de 2026"), Return, wait 1, `await __fim(data, hora)`. Restart `servidor_envio.py` after
+`metadados`: it loads the descriptions at start, and `__abre` refuses one without the music credit. At the end run
+`__fichaVideo(id)` on every video: on 2026-11-02, 29 of 78 had saved language Portuguese even though the upload dialog
+showed English, so fix those on the edit page ("Mostrar mais" → "Idioma do vídeo" → "Inglês" → Save).
+
 1. `python scripts/servidor_envio.py LOTE` serves `GET /meta/NN` (title, description, tags, file name) and
    `GET /video/NN` (the final MP4) on 127.0.0.1:8768 only.
 2. In the Studio tab (channel content page), run with `javascript_tool`:

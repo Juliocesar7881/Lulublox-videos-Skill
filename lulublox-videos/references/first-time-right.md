@@ -228,3 +228,29 @@ The audit checks collisions and the face size, not what covers the face or wheth
   skirt hem (2.8), or the skirt and the arms poke out.
 - **A light Fabric rug** under her feet renders as a dark disc: use SmoothPlastic, as for white cloth.
 - **Studio upload**: 4 of 12 videos again saved the language as Portuguese. Always check the edit page afterwards.
+
+## 11. Lessons of the 78-video batch (2026-11-02)
+
+78 videos in one night: `modelos/kit/` has what made that possible. `kit_lulu.lua` (ready sets and cute animals, appended
+to `cenario_comum.lua`), `kit_cena.py` (`seq`, `abre`, `fecha`, `fecha_ed`), `dividir_src.py` (one `_src/*.txt` file with
+many videos becomes each project's three files), `fila.sh` + `produzir_fila.sh` (recording queue daemon), `ver.py` (10
+frames of several videos in one image, for a fast review), `recorte.py` + `conferir_cortes.py`, `agendar_fila.py`.
+
+- **Framing**: only about 3.2 studs on each side of the camera target survive. Lulu at x -1.3, camera x 0.3, target x
+  0.4; the joke object at x 0.7..3.3. Barbells, smileys and tents past that came out cut.
+- **Height**: a table at y 3 sits in the caption band; a cow of 3.5 studs behind it disappears. Things that must read
+  go above y 3.6 or behind her plane with a high camera. Cow scale 3, table top 2.3.
+- **Colliding tables** need their left edge at least 2.4 from her root. `balcao()` and `mesa()` collide.
+- **Fabric** renders almost black in this place, whatever the color. Never use it.
+- **The empty upper half** of an indoor set looks unfinished: `fundoSala()` now adds a light band and pennants.
+- **Animals need a tell**: without horns and spots a cow or a goat reads as a bear or a dog (`vaca`, `chifres` options).
+- **Something on her head**: follow with `CF(noob.Head.Position + V(0, 0.8, 0.1))` every frame, not a weld and not
+  `Head.CFrame * ...` (the cat ended up two studs away).
+- **Lying forward** (belly slide) turns the face away and the audit refuses it: lean 24 degrees on a board instead.
+- **First frame**: when she starts away from her `K.emPe` spot (balloon, zip line), set her position in `preparar()`
+  (after `raiz.CFrame = inicio`), or the audit reports the face out of frame at 0 s.
+- **Voice split**: `dividir_falas.py` can cut up to 0.3 s off the real silence. Run `conferir_cortes.py`, then
+  `recorte.py NN` snaps each cut to the middle of the nearest silence. Ultra short lines said in a row ("Do! Re! Mi!")
+  have no silence between them, and Whisper heard an ugly phrase there: regenerate them as separate clear words.
+- **Studio**: `__iniciar` closes a leftover "Vídeo programado" notice and that closes the new upload too: use `__abre`.
+  A description uploaded before the render has no music credit: refresh `lote.py metadados`, restart `servidor_envio`.
