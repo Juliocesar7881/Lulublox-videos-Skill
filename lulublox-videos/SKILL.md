@@ -1,6 +1,6 @@
 ---
 name: lulublox-videos
-description: "Create animated Roblox Shorts for kids (9:16, ~25-35 s) starring Lulu, a charismatic and cute girl avatar, entirely in English: original kid-friendly script, Lulu's ElevenLabs voice (Jessica), scene built and animated in Roblox Studio through the official command line (no clicks), recording only the Studio window, and a punchy final edit with word-by-word captions, SFX and music."
+description: "Create animated Roblox Shorts for kids (9:16, ~20-30 s) starring Lulu, a charismatic and cute girl avatar, entirely in English: original kid-friendly script, Lulu's ElevenLabs voice (Jessica), scene built and animated in Roblox Studio through the official command line (no clicks), recording only the Studio window, and a punchy final edit with word-by-word captions, SFX and music."
 ---
 
 # Lulublox Videos
@@ -12,7 +12,7 @@ Turn an idea from the user ("make one about which slide is the fastest") into a 
 - Outfit: pink top with puffy short sleeves, a purple pleated skirt that opens with her legs (they never cut through it), and white sneakers with pink soles.
 - Animated with the **official Roblox packages** (Cartoony, Levitation and R15 emotes).
 
-The audience is kids. Read [references/production-rules.md](references/production-rules.md), [references/format.md](references/format.md) and [references/animkit.md](references/animkit.md) before starting, and [references/youtube-studio.md](references/youtube-studio.md) before posting.
+The audience is kids. Read [references/what-performs.md](references/what-performs.md) before choosing ideas, [references/production-rules.md](references/production-rules.md), [references/format.md](references/format.md) and [references/animkit.md](references/animkit.md) before starting, and [references/youtube-studio.md](references/youtube-studio.md) before posting.
 
 **Everything is in English, always:** script, voice, captions, on-screen signs, video title, description, tags and file names. Never produce Portuguese or Spanish lines for this skill. After the voice lines are ready, run `scripts/fazer_short.py PROJECT`. It runs the audits, records, edits, reviews the captions and renders, and only finishes with the final MP4. `--so-conferir` only checks the delivery.
 
