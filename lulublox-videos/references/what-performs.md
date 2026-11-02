@@ -56,7 +56,7 @@ Average viewed is a poor comparison across lengths: 13 s videos loop to 140%, wh
 - On BRUNOBLOX (37 Roblox videos), median views by length: 20–29 s 23k, 30–39 s **34k**, 40–49 s 23k, 50 s or more 9k. Subs per 1,000 views: 3.1, 3.3, 4.7, 4.2. One 19 s video had 0.7.
 - Outside data agrees: 25–35 s clusters among top performers, and nearly half of viral Shorts run 20–40 s (Toptal).
 
-**Target 20–30 s, never under 15 s or over 40 s unless the user asks.** Lulu's own 16–37 s videos were all in the weak kids batch, so this is not proven for her: the first batch must mix lengths and be compared (below).
+**Target 20–30 s, never over 40 s unless the user asks.** Lulu's own 16–37 s videos were all in the weak kids batch, so this is not proven for her: until the test below has a result, each batch mixes 13–15 s and 22–30 s videos. After that, drop whichever loses.
 
 Credits: the 82-video batch used about 8,300 credits at 11.3 s each, about 9 credits per finished second. A 25 s video costs ~225 credits, so 10,000 credits make ~44 videos. Tell the user when a batch would not fit, and offer fewer videos before shorter ones.
 
