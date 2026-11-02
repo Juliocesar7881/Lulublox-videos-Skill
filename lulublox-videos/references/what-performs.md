@@ -46,7 +46,7 @@ Hypothesis from comparing frames at t=0.2 s and t=1.5 s of 13 strong and weak vi
 
 ## Stayed to watch is the number to watch
 
-"Stayed to watch" (the percentage who did not swipe away) tracks views better than any other number: 70–75% gave 22–31k, 49–58% gave 1–12k. Target **≥ 70%**. Below 60%, the first two seconds failed, whatever happens later.
+"Stayed to watch" (the percentage who did not swipe away) mostly follows views: 69–75% gave 22–31k, 47–58% gave 1–12k. There are exceptions (Pizza 63% with 28k, the storm 65%, and a BRUNOBLOX video with 70% and only 2k), so it is a signal, not a guarantee. Target **≥ 70%**. Below 60%, look at the first two seconds first.
 
 Average viewed is a poor comparison across lengths: 13 s videos loop to 140%, while the 30 s storm video reached 86% and earned far more. Creator-reported targets are 60–80% viewed, but no official benchmark exists: compare with this channel's own videos.
 
@@ -64,7 +64,7 @@ Credits: the 82-video batch used about 8,300 credits at 11.3 s each, about 9 cre
 
 Measured on both channels, topics that win are **universal childhood situations with no explanation needed**: rain, a ball over the fence, hide and seek with the dog, a melting snowman, a sandcastle against the wave, an alarm clock, an apple out of reach, spicy food, a snowball fight.
 
-Topics that lose: adult or dated subjects (Black Friday, R$1), school-project setups (science fair volcano 5.4k), memes and slang (brainrot and aura videos under 10k), and pure physics comparisons with nothing at stake (magnets, swings, balls).
+Topics that lose: adult subjects (a new sports car 6.8k), school-project setups (science fair volcano 5.4k) and memes and slang (brainrot and aura videos under 10k). Pure comparisons with nothing at stake (magnets, swings, balls) also did badly, but all of those were in the weak kids batch, so this one is less certain.
 
 Formats that hit tens of millions on other channels, adapted to Lulu with **original stories and no third-party characters**:
 
