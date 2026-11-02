@@ -1,4 +1,4 @@
-"""Metadados + agenda.json do lote: projeto NN = NN-ésima vaga de 11:45/20:00 a partir de 02/11/2026. Preserva status/link.
+"""Metadados + agenda.json do lote: projeto NN = NN-ésima vaga livre: 11/12 a 13/12 às 11:45/20:00, 14/12 a 01/01/2027 às 09:00/11:45/18:00/20:00. Preserva status/link.
 Vaga que já passou (ou a menos de 40 min) sem vídeo agendado: é listada e o relatório precisa contar."""
 import datetime as dt, json, subprocess, sys
 from pathlib import Path
@@ -11,12 +11,13 @@ old = {}
 ag = L / 'agenda.json'
 if ag.exists():
     old = {i['n']: i for i in json.loads(ag.read_text(encoding='utf-8'))['itens']}
-slots, d0 = [], dt.date(2026, 11, 2)
-for k in range(39):
+slots, d0 = [], dt.date(2026, 12, 11)
+for k in range(22):
     dia = d0 + dt.timedelta(days=k)
-    for hh, mm in ((11, 45), (20, 0)):
+    horas = ((11, 45), (20, 0)) if k < 3 else ((9, 0), (11, 45), (18, 0), (20, 0))
+    for hh, mm in horas:
         slots.append(dt.datetime(dia.year, dia.month, dia.day, hh, mm, tzinfo=fuso))
-assert len(slots) == 78 == len(ps)
+assert len(slots) == 82 == len(ps)
 itens = []
 for p, q in zip(ps, slots):
     m = json.loads((p / 'publicacao.json').read_text(encoding='utf-8'))

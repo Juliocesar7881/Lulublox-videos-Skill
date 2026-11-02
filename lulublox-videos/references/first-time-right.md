@@ -254,3 +254,24 @@ frames of several videos in one image, for a fast review), `recorte.py` + `confe
   have no silence between them, and Whisper heard an ugly phrase there: regenerate them as separate clear words.
 - **Studio**: `__iniciar` closes a leftover "Vídeo programado" notice and that closes the new upload too: use `__abre`.
   A description uploaded before the render has no music credit: refresh `lote.py metadados`, restart `servidor_envio`.
+
+## 12. Lessons of the 82-video batch (2026-11-02)
+
+- **Glass hides her face**: a transparent part with `Enum.Material.Glass` in front of Lulu (a giant bubble, a hamster ball) makes the
+  face disappear. Use SmoothPlastic with Transparency 0.7-0.8.
+- **Big text**: `TextScaled` stops at 100 px, so at 50 PixelsPerStud text is never taller than about 2 studs. For a huge "2027" in the
+  sky set `PixelsPerStud` to about 10 on the SurfaceGui and the stroke to 2.
+- **`cam.seguir` offsets are relative to the root** (y 3.4 above the floor): a camera at y 7 needs offset y 3.6. Copying world
+  coordinates put the face in the caption band.
+- **Portrait width**: half the visible width is about 0.29 x the distance. At 12.6 studs, x past 3.6 from the target is out of frame.
+- **`pintar` and the other scene helpers do not exist in `cenario_corpo.lua`**: the scene crashes and Studio returns no audit output.
+- **`montar_edicao.py` only knows `ini`, `fimf`, `T`, `S`, `ed`**: a variable from the `cena` part (`corte`, `t_toque`) breaks the edit.
+- **Coin-like cylinders**: a part with its axis on X reads as a stick; turn it with `ANG(0, rad(90), 0)` so the disc faces the camera.
+- **Numbers on the floor**: `texto` on the Top face reads upside down from our camera: rotate the part 180 degrees on Y.
+- **A door in a wall**: leave the wall out behind the door, or the door sits inside the wall and never shows.
+- **Daily upload limit**: YouTube stopped uploads after 101 videos in about 11 hours ("O limite diário de envios foi alcançado").
+  Never work around it: wait the 24 hours. A batch above about 100 videos needs two days of uploading.
+- **`browser_batch`**: two videos per call. Three go past the tool timeout, though the page keeps working: check the page before
+  repeating anything.
+- **Language fix**: Studio only keeps the change if the page stays open until it saves. Poll the edit page until `audioLanguage` reads
+  `en` before leaving; with a fixed wait of 2-6 s most changes were lost.

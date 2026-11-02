@@ -1,4 +1,4 @@
--- ===================================================================== kit: sets and animals shared by a whole batch
+-- ===================================================================== kit do lote lulu-20261102
 -- Cenários prontos (o personagem fica em (-1.3, y, 0.4), câmera em z ~ -7.5) e bichos fofos com pivô no chão, de frente
 -- para a câmera (-Z). Cada cenário devolve a altura do piso. Todo bicho nasce longe (y -200) e a cena o posiciona.
 local MADEIRA, BRANCO = C(205, 150, 95), C(255, 255, 255)
@@ -582,4 +582,185 @@ local function criarTreno(nome)
 	end
 	fechar(m, b, false)
 	return m
+end
+
+-- ---------------------------------------------------------------- bichos e objetos do lote lulu-20261211
+local function criarElefante(nome, escala)
+	local m, O, b = novoBicho(nome or "Elefante")
+	local cor, claro = C(165, 175, 200), C(255, 190, 200)
+	elipse("Corpo", V(2.6, 2.4, 3.0), CF(O + V(0, 2.0, 0.4)), cor, nil, m, false)
+	bola("Cabeca", 1.9, O + V(0, 2.9, -1.2), cor, nil, m, false)
+	olhosB(m, O, 3.25, -2.0, 0.42, 0.24)
+	for k = 0, 6 do bola("Tromba", 0.6 - k * 0.04, O + V(0, 2.6 - k * 0.36, -2.1 - math.sin(k / 6 * 1.2) * 0.5), cor, nil, m, false) end
+	for k = 0, 6 do
+		local t = bola("Tromba2", 0.6 - k * 0.04, O + V(-k * 0.42, 2.7 + k * 0.28, -2.15 - k * 0.04), cor, nil, m, false)
+		t.Transparency = 1
+	end
+	for _, s in ipairs({ -1, 1 }) do
+		elipse("Orelha", V(1.6, 1.8, 0.2), CF(O + V(s * 1.5, 3.1, -1.0)) * ANG(0, rad(-s * 20), 0), cor, nil, m, false)
+		elipse("OrelhaDentro", V(1.1, 1.3, 0.06), CF(O + V(s * 1.5, 3.1, -1.12)) * ANG(0, rad(-s * 20), 0), claro, nil, m, false)
+		for _, z in ipairs({ -0.5, 1.3 }) do cilindro("Perna", 1.3, 0.8, O + V(s * 0.8, 0.65, z), cor, nil, m, false) end
+	end
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function criarMacaco(nome, escala)
+	local m, O, b = novoBicho(nome or "Macaco")
+	local cor, claro = C(140, 95, 60), C(240, 205, 165)
+	elipse("Corpo", V(1.1, 1.4, 1.0), CF(O + V(0, 1.0, 0)), cor, nil, m, false)
+	elipse("Barriga", V(0.7, 0.9, 0.2), CF(O + V(0, 0.95, -0.42)), claro, nil, m, false)
+	bola("Cabeca", 1.05, O + V(0, 2.05, 0), cor, nil, m, false)
+	elipse("Rosto", V(0.8, 0.66, 0.24), CF(O + V(0, 1.98, -0.42)), claro, nil, m, false)
+	olhosB(m, O, 2.14, -0.5, 0.18, 0.15)
+	elipse("Sorriso", V(0.34, 0.06, 0.05), CF(O + V(0, 1.82, -0.56)), C(120, 60, 50), nil, m, false)
+	for _, s in ipairs({ -1, 1 }) do
+		bola("Orelha", 0.36, O + V(s * 0.58, 2.1, 0), claro, nil, m, false)
+		elipse("Braco", V(0.26, 1.1, 0.26), CF(O + V(s * 0.66, 1.0, -0.1)) * ANG(0, 0, rad(s * 16)), cor, nil, m, false)
+		elipse("Pe", V(0.3, 0.2, 0.5), CF(O + V(s * 0.3, 0.1, -0.1)), cor, nil, m, false)
+	end
+	elipse("Rabo", V(0.16, 0.16, 1.2), CF(O + V(0.1, 0.8, 0.8)) * ANG(rad(-30), 0, 0), cor, nil, m, false)
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function criarPorco(nome, escala)
+	return quadrupede(nome or "Porco", { cor = C(255, 175, 190), claro = C(255, 205, 215), escuro = C(240, 145, 170), orelha = "ponta", nariz = C(225, 105, 135), rabo = false, escala = escala or 1.4 })
+end
+local function criarRato(nome, escala)
+	return quadrupede(nome or "Rato", { cor = C(190, 190, 205), claro = BRANCO, escuro = C(255, 170, 190), orelha = "redonda", nariz = C(255, 130, 150), escala = escala or 0.6 })
+end
+-- Só a cabeça, com o pivô na linha da água.
+local function criarHipo(nome, escala)
+	local m, O, b = novoBicho(nome or "Hipo")
+	local cor = C(165, 135, 175)
+	elipse("Cabeca", V(3.0, 1.5, 3.2), CF(O + V(0, 0.3, 0)), cor, nil, m, false)
+	elipse("Focinho", V(2.2, 1.1, 1.2), CF(O + V(0, 0.2, -1.4)), C(190, 160, 195), nil, m, false)
+	for _, s in ipairs({ -1, 1 }) do
+		bola("Saliencia", 0.8, O + V(s * 0.8, 1.0, -0.2), cor, nil, m, false)
+		bola("Olho", 0.34, O + V(s * 0.8, 1.14, -0.5), C(30, 25, 25), nil, m, false)
+		bola("BrilhoOlho", 0.12, O + V(s * 0.74, 1.2, -0.65), BRANCO, Enum.Material.Neon, m, false)
+		bola("Orelha", 0.4, O + V(s * 1.1, 1.14, 0.8), C(255, 170, 190), nil, m, false)
+		bola("Narina", 0.2, O + V(s * 0.45, 0.68, -1.72), C(90, 70, 100), nil, m, false)
+	end
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+-- Baleia com uma ilhota nas costas: topo da areia em y = 3.9 do pivô, olhos em y = 1.5.
+local function criarBaleia(nome)
+	local m, O, b = novoBicho(nome or "Baleia")
+	local cor = C(70, 125, 205)
+	elipse("Corpo", V(13, 5, 7), CF(O + V(1.5, 1.2, 1)), cor, nil, m, false)
+	elipse("Barriga", V(10, 2.6, 6.8), CF(O + V(0.5, 0.1, 0.8)), C(220, 235, 250), nil, m, false)
+	for _, x in ipairs({ -1.6, 2.8 }) do
+		bola("Olho", 0.7, O + V(x, 1.5, -2.45), C(30, 25, 30), nil, m, false)
+		bola("BrilhoOlho", 0.26, O + V(x - 0.12, 1.64, -2.76), BRANCO, Enum.Material.Neon, m, false)
+	end
+	elipse("Sorriso", V(3.4, 0.2, 0.2), CF(O + V(0.6, 0.55, -3.34)), C(40, 70, 130), nil, m, false)
+	elipse("Ilha", V(7, 0.9, 5), CF(O + V(-1.3, 3.5, 0.6)), C(250, 225, 160), Enum.Material.Sand, m, false)
+	cilindro("Palmeira", 5, 0.4, O + V(1.3, 6.2, 1.6), C(170, 120, 75), nil, m, false)
+	for a = 0, 5 do elipse("Folha", V(3.2, 0.24, 0.9), CF(O + V(1.3, 8.8, 1.6)) * ANG(0, rad(a * 60), rad(-15)) * CF(1.4, 0, 0), C(70, 180, 80), nil, m, false) end
+	fechar(m, b, false)
+	return m
+end
+local function criarPreguica(nome, escala)
+	local m, O, b = novoBicho(nome or "Preguica")
+	local cor, claro = C(165, 130, 95), C(235, 215, 185)
+	elipse("Corpo", V(1.6, 2.0, 1.3), CF(O + V(0, 1.1, 0)), cor, nil, m, false)
+	bola("Cabeca", 1.25, O + V(0, 2.5, 0), cor, nil, m, false)
+	elipse("Rosto", V(0.95, 0.8, 0.2), CF(O + V(0, 2.45, -0.54)), claro, nil, m, false)
+	for _, s in ipairs({ -1, 1 }) do
+		elipse("Mancha", V(0.36, 0.24, 0.08), CF(O + V(s * 0.24, 2.56, -0.66)) * ANG(0, 0, rad(-s * 18)), C(85, 60, 45), nil, m, false)
+		bola("Olho", 0.14, O + V(s * 0.24, 2.56, -0.72), C(25, 20, 20), nil, m, false)
+		elipse("Perna", V(0.4, 0.9, 0.4), CF(O + V(s * 0.45, 0.4, -0.2)), cor, nil, m, false)
+	end
+	elipse("Sorriso", V(0.42, 0.06, 0.05), CF(O + V(0, 2.26, -0.66)), C(110, 70, 55), nil, m, false)
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function criarTartaruga(nome, escala)
+	local m, O, b = novoBicho(nome or "Tartaruga")
+	local cor = C(120, 200, 110)
+	elipse("Casco", V(2.2, 1.3, 2.6), CF(O + V(0, 0.8, 0.2)), C(90, 165, 95), nil, m, false)
+	bola("Cabeca", 0.8, O + V(0, 0.95, -1.4), cor, nil, m, false)
+	olhosB(m, O, 1.08, -1.72, 0.2, 0.16)
+	elipse("Sorriso", V(0.3, 0.05, 0.05), CF(O + V(0, 0.82, -1.8)), C(50, 110, 60), nil, m, false)
+	for _, s in ipairs({ -1, 1 }) do
+		for _, z in ipairs({ -0.7, 1.0 }) do elipse("Pata", V(0.5, 0.36, 0.6), CF(O + V(s * 0.95, 0.2, z)), cor, nil, m, false) end
+	end
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+-- Ieti: 7 de altura na escala 1.
+local function criarIeti(nome, escala)
+	local m, O, b = novoBicho(nome or "Ieti")
+	local cor = C(245, 248, 255)
+	elipse("Corpo", V(4, 4.6, 3), CF(O + V(0, 3.0, 0)), cor, nil, m, false)
+	bola("Cabeca", 2.6, O + V(0, 5.6, 0), cor, nil, m, false)
+	elipse("Rosto", V(1.9, 1.5, 0.3), CF(O + V(0, 5.5, -1.14)), C(150, 195, 240), nil, m, false)
+	olhosB(m, O, 5.75, -1.28, 0.42, 0.3)
+	elipse("Sorriso", V(0.9, 0.12, 0.08), CF(O + V(0, 5.1, -1.3)), C(70, 110, 170), nil, m, false)
+	for _, s in ipairs({ -1, 1 }) do
+		elipse("Braco", V(1.1, 3.4, 1.1), CF(O + V(s * 2.3, 3.1, -0.2)) * ANG(0, 0, rad(s * 14)), cor, nil, m, false)
+		elipse("PePeludo", V(1.5, 0.9, 2.1), CF(O + V(s * 0.9, 0.45, -0.3)), cor, nil, m, false)
+	end
+	for i = 1, 14 do bola("Pelo", 0.9, O + V(math.sin(i * 2.1) * 1.7, 1.4 + (i % 7) * 0.65, -0.9 - (i % 3) * 0.12), C(235, 240, 250), nil, m, false) end
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function criarRoboP(nome, escala)
+	local m, O, b = novoBicho(nome or "Robo")
+	local cor = C(175, 195, 220)
+	peca("Corpo", V(1.8, 2.0, 1.2), CF(O + V(0, 1.6, 0)), cor, Enum.Material.Metal, nil, m, false)
+	peca("Cabeca", V(1.5, 1.2, 1.1), CF(O + V(0, 3.2, 0)), C(205, 220, 240), Enum.Material.Metal, nil, m, false)
+	peca("Painel", V(1.0, 0.7, 0.06), CF(O + V(0, 1.7, -0.63)), C(60, 70, 95), nil, nil, m, false)
+	for i = 0, 2 do bola("Led", 0.18, O + V(-0.3 + i * 0.3, 1.7, -0.68), ({ C(255, 80, 90), C(255, 210, 70), C(90, 240, 150) })[i + 1], Enum.Material.Neon, m, false) end
+	for _, s in ipairs({ -1, 1 }) do
+		bola("Olho", 0.36, O + V(s * 0.36, 3.3, -0.56), C(90, 220, 255), Enum.Material.Neon, m, false)
+		peca("Braco", V(0.3, 1.5, 0.3), CF(O + V(s * 1.1, 1.7, 0)), C(150, 170, 195), Enum.Material.Metal, nil, m, false)
+		cilindro("Roda", 0.6, 0.7, O + V(s * 0.6, 0.35, 0), C(60, 65, 80), nil, m, false)
+	end
+	cilindro("Antena", 0.6, 0.08, O + V(0, 4.1, 0), C(120, 130, 150), nil, m, false)
+	bola("PontaAntena", 0.2, O + V(0, 4.45, 0), C(255, 80, 90), Enum.Material.Neon, m, false)
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function criarPolvo(nome, escala)
+	local m, O, b = novoBicho(nome or "Polvo")
+	local cor = C(235, 110, 170)
+	elipse("Cabeca", V(2.0, 2.3, 2.0), CF(O + V(0, 2.2, 0)), cor, nil, m, false)
+	olhosB(m, O, 2.25, -0.92, 0.4, 0.3)
+	elipse("Sorriso", V(0.5, 0.08, 0.06), CF(O + V(0, 1.8, -1.0)), C(160, 50, 110), nil, m, false)
+	for a = 0, 7 do
+		local q = rad(a * 45 + 22)
+		elipse("Tentaculo", V(0.4, 1.8, 0.4), CF(O + V(math.cos(q) * 1.0, 0.7, math.sin(q) * 1.0)) * ANG(math.sin(q) * rad(30), 0, -math.cos(q) * rad(30)), cor, nil, m, false)
+	end
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function criarAlien(nome, escala)
+	local m, O, b = novoBicho(nome or "Alien")
+	local cor = C(130, 225, 120)
+	elipse("Corpo", V(0.9, 1.3, 0.8), CF(O + V(0, 0.7, 0)), cor, nil, m, false)
+	elipse("Cabeca", V(1.6, 1.3, 1.3), CF(O + V(0, 1.9, 0)), cor, nil, m, false)
+	for _, s in ipairs({ -1, 1 }) do
+		elipse("Olho", V(0.46, 0.56, 0.1), CF(O + V(s * 0.36, 2.0, -0.6)) * ANG(0, 0, rad(s * 15)), C(25, 25, 40), nil, m, false)
+		bola("BrilhoOlho", 0.12, O + V(s * 0.3, 2.14, -0.68), BRANCO, Enum.Material.Neon, m, false)
+		cilindro("Antena", 0.5, 0.06, O + V(s * 0.3, 2.8, 0), cor, nil, m, false)
+		bola("PontaAntena", 0.16, O + V(s * 0.3, 3.05, 0), C(255, 220, 90), Enum.Material.Neon, m, false)
+	end
+	fechar(m, b, false)
+	if escala then m:ScaleTo(escala) end
+	return m
+end
+local function placa(nome, x, y, z, larg, alt, txt, corFundo, corTexto)
+	local p = peca(nome, V(larg, alt, 0.12), CF(x, y, z), corFundo or BRANCO, nil, nil, cen, false)
+	texto(p, txt, corTexto or C(40, 40, 60), BRANCO)
+	return p
 end

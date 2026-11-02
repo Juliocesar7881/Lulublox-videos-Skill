@@ -9,6 +9,8 @@
 //      __botaoEnviar() once and click the button with a REAL click - window.open needs a user gesture).
 //   4. python scripts/dividir_falas.py PROJECT PASTA/E07-todas.mp3, then alinhar_falas.py roteiro.json falas
 // JS calls must finish in under ~45 s.
+// The History panel must be open: the items are read from it. ctrl+Return also generates. "no v4 take": call __finaliza again.
+// With few credits left the site opens an upgrade popup that swallows every key: close it on the X, never accept it.
 window.__capt = window.__capt || [];
 if (!window.__hookA) {
   const of = window.fetch.bind(window);

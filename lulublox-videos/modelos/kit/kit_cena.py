@@ -9,6 +9,14 @@ MUSICAS = ['quirky-dog', 'carefree', 'sneaky-snitch', 'merry-go', 'life-of-riley
 
 KIT = r'''
 -- poses e ajudantes do lote
+cen = W("Cenario")
+function P(n) return cen:WaitForChild(n) end
+function some(o) porPivo(o, CF(0, -150, 0)) end
+function brilha(pos, cor, n) estouro(pos, cor or C(255, 240, 150), n or 14, 0.35, 5) end
+function naCabeca(o, d)
+	d = d or V(0, 0.8, 0.1)
+	return game:GetService("RunService").Heartbeat:Connect(function() porPivo(o, CF(noob.Head.Position + d)) end)
+end
 APONTA = { RightShoulder = { 85, 60 }, RightElbow = { 5, 0 } }
 ALCANCA = { RightShoulder = { 95, 70 }, RightElbow = { 5, 0 } }
 ALTO = { RightShoulder = { 140, 45 }, RightElbow = { 5, 0 } }

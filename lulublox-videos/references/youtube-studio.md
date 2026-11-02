@@ -31,6 +31,8 @@ type the date ("3 de dez. de 2026"), Return, wait 1, `await __fim(data, hora)`. 
 `metadados`: it loads the descriptions at start, and `__abre` refuses one without the music credit. At the end run
 `__fichaVideo(id)` on every video: on 2026-11-02, 29 of 78 had saved language Portuguese even though the upload dialog
 showed English, so fix those on the edit page ("Mostrar mais" → "Idioma do vídeo" → "Inglês" → Save).
+Stay on the page until the fetched edit page reads `audioLanguage` `en`, polling every 3 s, or the change is lost. The daily upload
+limit is about 100 videos: when Studio shows "O limite diário de envios foi alcançado", stop and resume 24 hours later.
 
 1. `python scripts/servidor_envio.py LOTE` serves `GET /meta/NN` (title, description, tags, file name) and
    `GET /video/NN` (the final MP4) on 127.0.0.1:8768 only.
