@@ -40,6 +40,14 @@ shows `lulublox.yt` before the first upload.
 For many videos, keep the captions out of the conversation: write the queue as a JSON file, create a temporary
 `<input type=file>` in the page, send the JSON with `file_upload`, read it with `files[0].text()` and call `__tt` by index.
 
+## 2026-11-07 status
+- The schedule form changed: date and time are pickers now (see the header of `scripts/tiktok_helpers.js`). The old
+  `input.TUXTextInputCore-input` boxes are gone; the new `__tt` handles the pickers and reads the toast.
+- One video per `browser_batch`: file_upload (ref from `find`), wait 7, click the caption box, ctrl+a, Delete,
+  `await __ttN(k)`, then the sidebar Upload button + Escape + `find` for the next ref, all in the same batch.
+- The 30-post refusal came again on 2026-11-07 after only 6 new posts (49 scheduled in the list at that point, 43
+  before). Discard the upload (Discard, then Discard in the dialog) and stop; nothing is posted.
+
 ## Consent dialog
 
 The first click on **Schedule** on an account opens **Allow your video to be saved for scheduled posting?**. It is a

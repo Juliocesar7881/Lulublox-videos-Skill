@@ -275,3 +275,43 @@ frames of several videos in one image, for a fast review), `recorte.py` + `confe
   repeating anything.
 - **Language fix**: Studio only keeps the change if the page stays open until it saves. Poll the edit page until `audioLanguage` reads
   `en` before leaving; with a fixed wait of 2-6 s most changes were lost.
+
+## 13. Lessons of the January batches (2026-11-06, 44 videos overnight)
+
+- **One audit Studio beside one recording, never more**: two audits next to a recording dropped the capture to 590 of 752 frames
+  and the video failed four times. Run audits one at a time.
+- **The camera audit has no tolerance for "rosto baixo" (face centre below 62% of the frame) or "de costas"**: no lying down, no
+  back to the camera. Put a back shot (digging into snow) in an insert (`K.inserto(true)`), or film it from the other side.
+- **Feet inside a colliding floor fail the scene audit**: sitting on the floor, leaning back, rolling or rising out of a snow drift.
+  Set `CanCollide = false` on `Gramado`, `Piso` and `Baseplate` in that scene; `K.chao` still finds them (it looks for the Piso tag).
+- **Switch to `sit` before the root drops to the seat**: one frame of the standing pose at seat height puts both feet in the floor.
+- **`function urso()` next to `local urso = W("UrsoPolar")` replaces the model with the function**: `preparar()` errors, `abre()`
+  never sets the camera and the audit only reports "rosto fora do quadro". Never reuse a model's local name for a function.
+- **Text along +x reads mirrored** (screen right is -x); letters made of parts on a ceiling seen from below need the near row on top.
+- **Payoff animals on the left of the frame get cut first**: keep them within about 2 studs left of the camera target and never
+  behind Lulu (a penguin and a pig chair were invisible until moved to her right side).
+- **ElevenLabs history**: the play buttons of history items appear only after a mouse hover over the list; hover, then `__finaliza`.
+
+## 14. Lessons of the February batches (2026-11-06, 112 videos, made for kids)
+
+- **Valid faces only.** `K.rosto` takes happy, smile, surprised, scared, scream, nervous, confident, doubt, angry, dizzy,
+  squint, wink, sleepy, sleep. "laugh" does not exist and stops the scene with a Lua error; `lint_cena.py` now flags
+  unknown faces.
+- **Never name a `fecha(..., tempos={...})` key 'fim'**: it overwrites the end of the video.
+- **Sit with `fade = 0`** (`K.anim(noob, "sit", { fade = 0 })`): with a fade her straight legs go through the floor for a
+  frame. A sitting pose leaves her feet about 2 studs below the root, so whatever she sits on (gondola, box car, tube,
+  pony, bear) needs its seat at least ~1.5 studs above the ground; in a shallow pool she stands instead.
+- **Inserts see much more than the fov suggests.** Her arm, leg or skirt fills inserts of objects within ~2 studs of her
+  even ~40 degrees off-axis. Put the insert camera between her and the object, looking away from her, or keep the object
+  2+ studs from her body.
+- **Outdoor floor top is y 0.2** (Gramado): flat props on the ground start at 0.2, not 0.
+- **A cut does not stop a running `animar`**: if the next shot repositions what an earlier animar is still moving, keep
+  the connection and `Disconnect()` it first.
+- **YouTube daily upload limit**: after ~58 uploads in one day Studio answers "O limite diário de envios foi alcançado"
+  and the Schedule button stays disabled. Plan uploads across days (about 50 a day).
+- **Her arms are long**: in DOIS_LADOS or ALCANCA the hand sits about 2.6 studs to the side of the root (measured
+  2026-11-06: root x -1.0, right hand x 1.57). Her pink sleeve fills inserts of anything within ~3 studs of her side.
+  Keep insert subjects 3+ studs away or raise the arms (DOIS_ALTO) before the insert.
+- **Never put Glass between the camera and her face**: Roblox does not draw transparent parts behind Glass, and her face
+  plate is one, so a Glass window in front of her left a blank face in every shot (2026-11-06). Use SmoothPlastic with
+  Transparency for windows, bubbles and bowls that can come in front of her.
