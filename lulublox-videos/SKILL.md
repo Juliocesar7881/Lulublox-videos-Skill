@@ -1,6 +1,6 @@
 ---
 name: lulublox-videos
-description: "Create animated Roblox Shorts for kids (9:16, ~20-30 s) starring Lulu, a charismatic and cute girl avatar, entirely in English: original kid-friendly script, Lulu's ElevenLabs voice (Jessica), scene built and animated in Roblox Studio through the official command line (no clicks), recording only the Studio window, and a punchy final edit with word-by-word captions, SFX and music."
+description: "Create animated Roblox Shorts for kids (9:16, 30-40 s) starring Lulu, a charismatic and cute girl avatar, entirely in English: original kid-friendly script, Lulu's ElevenLabs voice (Jessica), scene built and animated in Roblox Studio through the official command line (no clicks), recording only the Studio window, and a punchy final edit with word-by-word captions, SFX and music."
 ---
 
 # Lulublox Videos

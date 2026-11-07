@@ -19,7 +19,7 @@ local function fundoSala(corParede, corPiso, matPiso)
 end
 local function janela(x, y, z)
 	peca("Ceu", V(3.2, 2.8, 0.05), CF(x, y, z), C(150, 215, 255), nil, nil, cen, false)
-	bola("CopaFora", 2.0, V(x + 0.8, y - 0.9, z + 0.1), C(90, 190, 80), nil, cen, false)
+	bola("CopaFora", 1.3, V(x - 0.95, y - 0.85, z + 0.1), C(90, 190, 80), nil, cen, false)
 	for _, f in ipairs({ { 0, 1.45, 3.5, 0.18 }, { 0, -1.45, 3.5, 0.18 }, { 1.7, 0, 0.18, 3 }, { -1.7, 0, 0.18, 3 }, { 0, 0, 0.1, 3 } }) do
 		peca("Moldura", V(f[3], f[4], 0.2), CF(x + f[1], y + f[2], z - 0.06), BRANCO, nil, nil, cen, false)
 	end
@@ -31,9 +31,9 @@ end
 local function mesa(x, z, larg, prof, alt, cor)
 	cor = cor or MADEIRA
 	local y0 = 0.24
-	peca("Tampo", V(larg, 0.16, prof), CF(x, y0 + alt - 0.08, z), cor, Enum.Material.Wood)
+	peca("Tampo", V(larg, 0.16, prof), CF(x, y0 + alt - 0.08, z), cor, Enum.Material.Wood, nil, cen, false) -- furniture is never her floor: a hand or knee on it is not a clip
 	for _, s in ipairs({ { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } }) do
-		peca("PeMesa", V(0.2, alt - 0.16, 0.2), CF(x + s[1] * (larg / 2 - 0.2), y0 + (alt - 0.16) / 2, z + s[2] * (prof / 2 - 0.2)), cor, Enum.Material.Wood)
+		peca("PeMesa", V(0.2, alt - 0.16, 0.2), CF(x + s[1] * (larg / 2 - 0.2), y0 + (alt - 0.16) / 2, z + s[2] * (prof / 2 - 0.2)), cor, Enum.Material.Wood, nil, cen, false)
 	end
 	return y0 + alt
 end
@@ -55,6 +55,41 @@ local function setQuarto()
 	K.piso(peca("Tapete", V(8, 0.03, 6), CF(0, 0.255, 0.8), C(170, 230, 210), nil, nil, cen, false))
 	return y
 end
+-- Sala 360 (dono, 2026-11-07): paredes laterais e da frente, com janela, quadros, prateleira e bandeirinhas, para a
+-- câmera girar em volta da Lulu e filmar por cima do ombro sem mostrar o vazio. Chame depois de setSala/setQuarto/
+-- setCozinha. As paredes ficam a x = +-9.5 e z = -11 (a câmera mais distante dos planos fica em z ~ -8).
+local function paredes360(corParede)
+	local cor = corParede or C(210, 200, 255)
+	local claro = cor:Lerp(C(255, 255, 255), 0.45)
+	local cores = { C(255, 90, 120), C(255, 200, 70), C(90, 190, 255), C(120, 220, 130), C(190, 130, 255) }
+	for _, s in ipairs({ -1, 1 }) do
+		local x = s * 9.5
+		peca("ParedeLado", V(0.4, 16, 18), CF(x, 8, -2), cor, nil, nil, cen, false)
+		peca("FaixaLado", V(0.06, 3.6, 18), CF(x - s * 0.23, 11.2, -2), claro, nil, nil, cen, false)
+		peca("RodapeLado", V(0.1, 0.5, 18), CF(x - s * 0.24, 0.5, -2), BRANCO, nil, nil, cen, false)
+		for i = 0, 9 do
+			peca("Bandeirinha", V(0.04, 0.62, 0.62), CF(x - s * 0.26, 10.1 - (i % 2) * 0.4, -9.5 + i * 1.7) * ANG(rad(45), 0, 0), cores[i % 5 + 1], nil, nil, cen, false)
+		end
+		-- quadro e prateleira com brinquedos
+		peca("QuadroLado", V(0.08, 1.6, 2.2), CF(x - s * 0.25, 6.4, -4.5), BRANCO, nil, nil, cen, false)
+		peca("TelaLado", V(0.06, 1.3, 1.9), CF(x - s * 0.3, 6.4, -4.5), s > 0 and C(255, 170, 200) or C(140, 220, 255), nil, nil, cen, false)
+		peca("Prateleira", V(1.0, 0.16, 3.0), CF(x - s * 0.7, 4.0, 1.5), MADEIRA, Enum.Material.Wood, nil, cen, false)
+		for i = 0, 2 do
+			bola("Brinquedo", 0.6, V(x - s * 0.7, 4.4, 0.5 + i * 1.0), cores[(i + (s > 0 and 0 or 2)) % 5 + 1], nil, cen, false)
+		end
+	end
+	-- parede da frente (atrás da câmera dos planos de frente): porta, quadro e bandeirinhas
+	peca("ParedeFrente", V(19.4, 16, 0.4), CF(0, 8, -11), cor, nil, nil, cen, false)
+	peca("FaixaFrente", V(19.4, 3.6, 0.06), CF(0, 11.2, -10.77), claro, nil, nil, cen, false)
+	peca("RodapeFrente", V(19.4, 0.5, 0.1), CF(0, 0.5, -10.76), BRANCO, nil, nil, cen, false)
+	peca("Porta", V(2.6, 5.4, 0.12), CF(-4.5, 2.94, -10.74), C(255, 190, 120), Enum.Material.Wood, nil, cen, false)
+	bola("Macaneta", 0.25, V(-5.4, 2.9, -10.65), C(255, 215, 70), nil, cen, false)
+	peca("QuadroFrente", V(2.4, 1.8, 0.08), CF(3.5, 6.2, -10.74), BRANCO, nil, nil, cen, false)
+	peca("TelaFrente", V(2.1, 1.5, 0.06), CF(3.5, 6.2, -10.69), C(255, 220, 110), nil, nil, cen, false)
+	for i = -5, 5 do
+		peca("Bandeirinha", V(0.62, 0.62, 0.04), CF(i * 1.6, 10.1 - (i % 2) * 0.4, -10.7) * ANG(0, 0, rad(45)), cores[i % 5 + 1], nil, nil, cen, false)
+	end
+end
 local function setCozinha(semJanela)
 	local y = fundoSala(C(255, 245, 200), C(235, 205, 165))
 	for i = -9, 9 do
@@ -72,8 +107,8 @@ local function setCozinha(semJanela)
 	return y
 end
 local function balcao(x, z, larg, prof, alt)
-	peca("Balcao", V(larg, alt - 0.1, prof), CF(x, 0.24 + (alt - 0.1) / 2, z), BRANCO)
-	peca("TampoBalcao", V(larg + 0.1, 0.1, prof + 0.1), CF(x, 0.24 + alt - 0.05, z), C(200, 150, 100), Enum.Material.Wood)
+	peca("Balcao", V(larg, alt - 0.1, prof), CF(x, 0.24 + (alt - 0.1) / 2, z), BRANCO, nil, nil, cen, false) -- never a floor for her: a hand on the counter is not a clip
+	peca("TampoBalcao", V(larg + 0.1, 0.1, prof + 0.1), CF(x, 0.24 + alt - 0.05, z), C(200, 150, 100), Enum.Material.Wood, nil, cen, false)
 	return 0.24 + alt
 end
 local function setParque(semente)

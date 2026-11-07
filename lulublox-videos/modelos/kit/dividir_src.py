@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from comum import Cena
-from kit_cena import seq, abre, fecha
+from kit_cena import seq, abre, fecha, close, plano, ins, soco, trav, orb, mao_, closev
 
 c = Cena(__file__)
 d, ini, E, fimf = c.d, c.ini, c.E, c.fim_fala

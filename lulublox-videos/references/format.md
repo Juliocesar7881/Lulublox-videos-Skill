@@ -1,6 +1,6 @@
 # Short format
 
-Vertical 9:16, 20–30 s, 60 fps, Lulu as the star, word-by-word captions with the key word in yellow. Everything in English. The reasons for the length, the hook and the topics are in [what-performs.md](what-performs.md).
+Vertical 9:16, **30–40 s** (owner, 2026-11-07: "era pra ser vídeos de 30 a 40 segundos"; the 7-line 12–15 s batches of November were too short), 60 fps, Lulu as the star, word-by-word captions with the key word in yellow. Everything in English. The reasons for the length, the hook and the topics are in [what-performs.md](what-performs.md).
 
 ## Main structure (~20–30 s): a problem, then "Pick fast!"
 
@@ -50,3 +50,25 @@ Other formats that fit Lulu (always original): "When…" moments, a sibling, mom
 ```
 
 `titulo_youtube`, `descricao`, `hashtags` and `tags` also go in English (kid-friendly SEO: "roblox", "roblox shorts", "roblox for kids", "lulu roblox", the topic words). Tags did not separate strong videos from weak ones, so use the template and spend the effort on the hook and the first frame.
+
+
+## 2026-11-07: length, camera and zoom (owner's review of the "music box" test)
+
+The owner rejected a 12 s test: too short, "parece só 2D com várias câmeras", zooms that look buggy and cuts that feel off.
+What changed (reference: `entregas/lulublox/lulu-20261107/_src/a.txt`, 31 s):
+
+- **Length 30–40 s**: 11–15 lines (2–6 words each, 1.5–3 s of voice), plus silent action beats (music plays, suspense
+  pause, the final dance ~3 s). Story: hook with the object on screen → 3 escalating tries → a quiet suspense beat ("Wait...
+  it stopped.") → twist → a happy shared ending.
+- **The camera moves inside each shot** (kit_cena: `trav` dolly/crane, `orb` arc around her or the object, `mao_` handheld
+  drift, `closev` close-up that pushes in). Shots of 2–4 s, about 12–14 cuts in 30 s. A static `plano`/`close` is the
+  exception, not the rule. Use over-the-shoulder shots from behind her (`mao_(..., inserto=True)`) and arcs around the
+  object to show depth.
+- **360 sets**: rooms get `paredes360()` after `setSala/setQuarto/setCozinha`, so arcs and reverse angles see walls, a
+  door, shelves and bunting instead of the void. Outdoor sets already surround her.
+- **Zoom**: `fecha_ed(..., zooms=False)` is the default now (no automatic push/punch on every line, which the next cut
+  chopped in half). Keep at most one in-camera `soco` and one `ed.shake` on the biggest action beat.
+- **Frame 0 of a moving shot**: `travel/orbita/mao` place the camera on the cut itself (before 2026-11-07 the first frame
+  after a cut still showed the old angle: the "rosto fora do quadro" one-frame audit hits).
+- Keep her arms down (`K.bracos(noob, nil, ...)`) before any shot whose camera passes on her right (+X) side: her reaching
+  arm fills the frame.

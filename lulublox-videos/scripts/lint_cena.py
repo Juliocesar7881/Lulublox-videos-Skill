@@ -48,6 +48,30 @@ def checar(proj):
             if re.search(r'local\s+' + h + r'\s*=\s*' + h + r'\(', txt):
                 erros.append(f'{nome}: "local {h} = {h}(...)" hides the helper {h}() for the rest of the file')
 
+    # a scene function named like a model variable replaces the model ("local bolo = W(..)" + "function bolo()"):
+    # every bolo:PivotTo() then errors and preparar() dies before the first camera (lote 20270201: 15, 18)
+    lua_cena = textos.get('gerar_cena.py', '')
+    locais = set()
+    for m in re.finditer(r'^\s*local\s+([\w\s,]+?)\s*=', lua_cena, re.M):
+        locais.update(n.strip() for n in m.group(1).split(',') if n.strip())
+    for m in re.finditer(r'^function\s+(\w+)\s*\(', lua_cena, re.M):
+        if m.group(1) in locais:
+            erros.append(f'gerar_cena.py: function {m.group(1)}() has the name of a local variable (a model?): '
+                         f'the function replaces it; rename the function')
+
+    # face names must exist in AnimKit.EXPR or its aliases: an unknown one ("laugh", lote 20270215: 17-28) errors at
+    # runtime and fails the audit with a Lua stack
+    ak = Path(__file__).resolve().parent.parent / 'luau' / 'AnimKit.lua'
+    if ak.exists():
+        fonte = ak.read_text(encoding='utf-8')
+        bloco = fonte[fonte.find('local EXPR = {'):fonte.find('AnimKit.EXPRESSOES = EXPR')]
+        validos = set(re.findall(r'^\t([a-zA-Z_]+) = \{', bloco, re.M)) | set(re.findall(r'\b([a-zA-Z_]+) = "', bloco))
+        for m in re.finditer(r'K\.rosto\(\s*noob\s*,\s*["\'](\w+)["\']|abre\(c,[^\n]*?,\s*\d+\s*,\s*["\'](\w+)["\']', lua_cena):
+            nome_e = m.group(1) or m.group(2)
+            if validos and nome_e not in validos:
+                erros.append(f'gerar_cena.py: unknown face "{nome_e}" (K.rosto names: happy, smile, surprised, scared, scream, '
+                             f'nervous, confident, doubt, angry, dizzy, squint, wink, sleepy)')
+
     # follow cameras end with the next cut, never with a duration (the scene clock can run behind os.clock)
     for m in re.finditer(r'cam\.seguir\(([^()]*(?:\([^()]*\)[^()]*)*)\)', tudo):
         partes = [p.strip() for p in re.split(r',(?![^()]*\))', m.group(1))]
@@ -113,8 +137,13 @@ def checar(proj):
         ultimo = ids[-1]
         if T['fim'] < ini[ultimo] + F[ultimo]['palavras'][-1]['end'] + 0.9:
             erros.append(f'the video ends {T["fim"]:.2f}s, too close to the last word (no room for the ending)')
-        if len(T.get('cortes', [])) > 3:
-            avisos.append(f'{len(T["cortes"])} cuts: the user asked for few, soft cuts (travel or follow the camera instead)')
+        # 2026-11-06 the user asked for the opposite of the old "few cuts" rule: zoom and angle changes like the viral
+        # storm video (10 cuts in 30 s). Warn when a video holds one shot for too long.
+        nc = len(T.get('cortes', []))
+        if nc < max(2, int(T['fim'] / 4)):
+            avisos.append(f'{nc} cuts in {T["fim"]:.0f}s: too few angle changes (aim for a cut every 2-4 s, each shot moving: kit_cena trav/orb/mao_/closev)')
+        if T['fim'] < 28:
+            avisos.append(f'video is {T["fim"]:.1f}s: the owner wants 30-40 s (2026-11-07); write 11-15 lines with silent action beats')
 
     # first shot: Lulu is about 4.5 studs wide in idle (arms out); more than ~2.0 studs off the camera target she is cut at
     # the frame edge even when her face passes the audit (02 gift boxes, 2026-10-17)
